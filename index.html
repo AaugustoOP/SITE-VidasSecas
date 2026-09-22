@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vidas Secas — Entre na História</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    --bg: #EAE0C4;
+    --bg-elevated: #E1D3AD;
+    --bg-card: #F1E8D2;
+    --text: #241A11;
+    --text-muted: #5B4B3A;
+    --accent: #A8532E;
+    --accent-dark: #7A3B1F;
+    --accent-soft: #C9754D;
+    --border: #C2A876;
+    --olive: #6B7052;
+    --danger: #7C2E1E;
+    --grain-opacity: 0.5;
+  }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17110D;
+      --bg-elevated: #221A13;
+      --bg-card: #241C15;
+      --text: #EBDFC3;
+      --text-muted: #B39D77;
+      --accent: #CB6E42;
+      --accent-dark: #A8532E;
+      --accent-soft: #DE8B5C;
+      --border: #4A3728;
+      --olive: #83886A;
+      --danger: #C96450;
+      --grain-opacity: 0.35;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17110D;
+    --bg-elevated: #221A13;
+    --bg-card: #241C15;
+    --text: #EBDFC3;
+    --text-muted: #B39D77;
+    --accent: #CB6E42;
+    --accent-dark: #A8532E;
+    --accent-soft: #DE8B5C;
+    --border: #4A3728;
+    --olive: #83886A;
+    --danger: #C96450;
+    --grain-opacity: 0.35;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Archivo', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  body {
+    background-image:
+      radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%),
+      radial-gradient(ellipse at 100% 100%, color-mix(in srgb, var(--olive) 12%, transparent), transparent 60%);
+  }
+  h1, h2, h3, .display { font-family: 'Fraunces', serif; }
+
+  ::selection { background: var(--accent); color: var(--bg-card); }
+  a, button, [tabindex] { -webkit-tap-highlight-color: transparent; }
+  button:focus-visible, [tabindex]:focus-visible, a:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  #app { min-height: 100%; width: 100%; position: relative; }
+
+  /* ---------- grain overlay ---------- */
+  .grain {
+    position: fixed; inset: 0; z-index: 60; pointer-events: none;
+    opacity: var(--grain-opacity); mix-blend-mode: overlay;
+  }
+
+  /* ---------- vignette ---------- */
+  .vignette {
+    position: fixed; inset: 0; z-index: 55; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.35) 100%);
+  }
+
+  /* ---------- crack texture divider ---------- */
+  .crack-rule { width: 100%; height: 10px; opacity: .5; }
+
+  /* ---------- scene transition ---------- */
+  .scene {
+    min-height: 100svh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    animation: sceneIn 900ms cubic-bezier(.16,.9,.35,1) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scene { animation: none; }
+  }
+  @keyframes sceneIn {
+    from { opacity: 0; transform: translateY(14px) scale(.996); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ---------- dust motes (entry) ---------- */
+  .dust-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .dust-mote {
+    position: absolute; bottom: -5%;
+    width: var(--s, 3px); height: var(--s, 3px);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent-soft) 70%, transparent);
+    opacity: 0;
+    animation: drift var(--dur, 14s) linear var(--delay, 0s) infinite;
+  }
+  @keyframes drift {
+    0%   { opacity: 0; transform: translate(0,0); }
+    8%   { opacity: .55; }
+    92%  { opacity: .3; }
+    100% { opacity: 0; transform: translate(var(--dx, 40px), -115vh); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dust-mote { animation: none; opacity: .25; }
+  }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    font-family: 'Archivo', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: .01em;
+    padding: .85rem 1.6rem;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    background: var(--accent);
+    color: #F5EBD8;
+  }
+  .btn:hover { transform: translateY(-1px); background: var(--accent-dark); }
+  .btn:active { transform: translateY(0); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .btn-ghost:hover { background: color-mix(in srgb, var(--border) 25%, transparent); border-color: var(--accent); }
+
+  .choice-btn {
+    display: block; width: 100%; text-align: left;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 1rem 1.15rem;
+    border-radius: 4px;
+    font-family: 'Archivo', sans-serif;
+    font-size: 0.98rem;
+    cursor: pointer;
+    transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+  }
+  .choice-btn:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--bg-card)); transform: translateX(2px); }
+  .choice-btn .choice-consequence {
+    display: block; margin-top: .3rem; font-size: .78rem; color: var(--text-muted); font-style: italic;
+  }
+
+  /* ---------- resource bar ---------- */
+  .resbar {
+    display: flex; gap: 1.1rem; flex-wrap: wrap; align-items: center;
+    padding: .7rem 1rem;
+    background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(6px);
+    position: sticky; top: 0; z-index: 20;
+  }
+  .res-item { display: flex; align-items: center; gap: .4rem; min-width: 84px; }
+  .res-icon { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+  .res-track {
+    width: 46px; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--border) 70%, transparent);
+    overflow: hidden;
+  }
+  .res-fill { height: 100%; background: var(--accent); transition: width 500ms ease; }
+  .res-num { font-size: .72rem; color: var(--text-muted); font-variant-numeric: tabular-nums; min-width: 26px; }
+
+  /* ---------- map ---------- */
+  .map-wrap { max-width: 900px; margin: 0 auto; width: 100%; }
+  .map-node circle.node-hit { cursor: pointer; }
+  .map-node text { font-family: 'Archivo', sans-serif; }
+  .map-node.locked { opacity: .38; }
+  .map-node.available circle.node-ring { animation: pulse 2.6s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce) { .map-node.available circle.node-ring { animation: none; } }
+  @keyframes pulse {
+    0%, 100% { opacity: .55; r: 17; }
+    50% { opacity: 0; r: 25; }
+  }
+  .trail-path { fill: none; stroke: var(--border); stroke-width: 2; stroke-dasharray: 3 7; stroke-linecap: round; }
+  .trail-path.traveled { stroke: var(--accent); stroke-dasharray: none; opacity: .75; }
+
+  /* scrollable safeguard for wide content */
+  .scroll-x { overflow-x: auto; }
+
+  .prose-cap { max-width: 62ch; }
+
+  .fade-line { position:relative; }
+  .fade-line::after {
+    content:""; display:block; height:1px; margin-top:2rem;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <filter id="grainFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" result="noise"/>
+    <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.9 0"/>
+  </filter>
+</svg>
+<div class="grain" style="filter:url(#grainFilter); background:#000;"></div>
+<div class="vignette"></div>
+
+<div id="app"></div>
+
+<script>
+/* ============================================================
+   ESTADO
+   ============================================================ */
+const initialState = () => ({
+  screen: 'entry', // entry | intro1 | intro2 | map | locationDetail | scene | ending
+  current: null,
+  beatIndex: 0,
+  resources: { water: 70, food: 60, money: 40, baleia: 90, family: 90 },
+  order: ['fazenda', 'estrada', 'caatinga', 'rio'],
+  unlocked: ['fazenda'],
+  visited: [],
+  finalChoiceUnlocked: false,
+  path: [],
+  decisions: [],
+  endingType: null,
+  endingCause: null,
+});
+let state = initialState();
+
+const clamp = (v) => Math.max(0, Math.min(100, Math.round(v)));
+
+function applyDelta(delta) {
+  for (const k in delta) {
+    state.resources[k] = clamp(state.resources[k] + delta[k]);
+  }
+}
+
+function checkTragedy() {
+  if (state.resources.water <= 0) { triggerEnding('tragic', 'water'); return true; }
+  if (state.resources.family <= 0) { triggerEnding('tragic', 'family'); return true; }
+  return false;
+}
+
+function triggerEnding(type, cause) {
+  state.endingType = type;
+  state.endingCause = cause || null;
+  state.screen = 'ending';
+}
+
+/* ============================================================
+   CONTEÚDO — LOCAIS E EVENTOS
+   ============================================================ */
+const LOCATIONS = {
+  fazenda: {
+    label: 'Fazenda', article: 'a',
+    teaser: 'O que restou do lar. Currais vazios, terra rachada.',
+    x: 90, y: 330,
+    beats: [
+      { type: 'narration', title: 'A Fazenda',
+        text: 'A terra que já deu sustento agora só devolve pó. As reses secas jazem no pasto. Não chove há meses. Fabiano olha para o horizonte — não há mais nada a colher aqui.' },
+      { type: 'choice', title: 'A partida', text: 'O que a família leva para a viagem?',
+        options: [
+          { label: 'Encher os cantis de água', delta: { water: 10, food: -10 },
+            result: 'Enchem os cantis até a boca, deixando a trouxa de farinha mais leve.' },
+          { label: 'Levar toda a farinha que sobrou', delta: { food: 10, water: -10 },
+            result: 'Levam toda a farinha, arriscando a sede pelo caminho que ainda não conhecem.' },
+          { label: 'Levar as poucas economias guardadas', delta: { money: 15, family: -5 },
+            result: 'Fabiano esconde as moedas na cintura. Sinhá Vitória carrega o peso — e a preocupação — na cabeça.' },
+        ] },
+    ],
+  },
+  estrada: {
+    label: 'Estrada', article: 'a',
+    teaser: 'Uma longa caminhada pela terra rachada, sob o sol a pino.',
+    x: 250, y: 205,
+    beats: [
+      { type: 'narration', title: 'A Estrada',
+        text: 'A estrada se estende sem fim, poeira e pedra sob os pés descalços. O sol pesa nos ombros de todos.' },
+      { type: 'choice', title: 'A água está acabando', text: 'O sol está forte e ainda falta caminho. O que fazer?',
+        options: [
+          { label: 'Continuar caminhando', delta: { water: -20 },
+            result: 'Seguem em frente, a garganta seca ardendo a cada passo.' },
+          { label: 'Procurar água', random: [
+              { chance: 0.55, delta: { water: 15, food: -5 }, result: 'Encontram uma poça escondida entre as pedras. Bebem até saciar a sede.' },
+              { chance: 0.45, delta: { water: -5, family: -5 }, result: 'Nada além de pedra e poeira. O tempo perdido pesa sobre todos.' },
+            ] },
+          { label: 'Parar para descansar', delta: { water: -10, family: 10 },
+            result: 'Param à sombra rala de uma árvore seca. O corpo agradece — a sede cresce um pouco mais.' },
+        ] },
+      { type: 'choice', title: 'O menino mais novo', text: 'O menino mais novo arrasta os pés, olhos pesados de sono e fome.',
+        options: [
+          { label: 'Carregar o menino no colo', delta: { water: -5, family: 5 },
+            result: 'Fabiano o ergue nos ombros. O peso é maior — mas os olhos do menino fecham em paz.' },
+          { label: 'Incentivá-lo a continuar andando', delta: { family: -5 },
+            result: 'Fabiano diz que ele é forte. O menino engole o choro e segue, um passo atrás do outro.' },
+        ] },
+    ],
+  },
+  caatinga: {
+    label: 'Caatinga', article: 'a',
+    teaser: 'Vegetação seca e espinhosa. Nem tudo o que se encontra é bem-vindo.',
+    x: 415, y: 300,
+    beats: [
+      { type: 'narration', title: 'A Caatinga',
+        text: 'Os galhos secos arranham as pernas. Um vulto amarelo se move ao longe, entre a poeira.' },
+      { type: 'choice', title: 'Soldado Amarelo', text: 'Ele se aproxima.',
+        options: [
+          { label: 'Enfrentar, erguer a voz', delta: { money: -10, family: -10 },
+            result: 'Fabiano ergue a voz por um instante. O soldado ri e segue seu caminho — o medo, esse, fica.' },
+          { label: 'Desviar em silêncio', delta: { water: -5, family: -2 },
+            result: 'Fazem a volta, evitando o encontro. Mais um pedaço de chão sob os pés já cansados.' },
+          { label: 'Entregar o que carregam', delta: { money: -20, food: -10, family: 5 },
+            result: 'Entregam o pouco que têm. Menos para comer — mas a paz de seguir vivos.' },
+        ] },
+    ],
+  },
+  rio: {
+    label: 'Rio', article: 'o',
+    teaser: 'O que resta do rio corre baixo entre as pedras. É preciso atravessar.',
+    x: 570, y: 150,
+    beats: [
+      { type: 'narration', title: 'O Rio',
+        text: 'O leito quase seco ainda guarda um fio de água turva. Baleia caminha mais devagar a cada légua.' },
+      { type: 'choice', title: 'Baleia', text: 'Baleia está fraca. A comida que resta não será suficiente para todos.',
+        options: [
+          { label: 'Dar comida para Baleia', delta: { food: -15, baleia: 25, family: -5 },
+            result: 'Dividem o pouco que têm com ela. Baleia ergue a cabeça, os olhos ainda vivos.' },
+          { label: 'Guardar comida para a família', delta: { food: -5, baleia: -20, family: 5 },
+            result: 'Guardam a comida para os meninos. Baleia segue mesmo assim, cambaleando atrás.' },
+        ] },
+      { type: 'choice', title: 'A travessia', text: 'É preciso atravessar — mas a correnteza ainda esconde perigo.',
+        options: [
+          { label: 'Atravessar agora', random: [
+              { chance: 0.55, delta: {}, result: 'Atravessam com cuidado. A água fria bate na cintura, mas todos chegam à outra margem.' },
+              { chance: 0.45, delta: { family: -15, money: -10 }, result: 'A correnteza é mais forte do que parecia. Levam parte do que carregavam — e um susto que não passa.' },
+            ] },
+          { label: 'Procurar uma passagem segura', delta: { water: -15, food: -10 },
+            result: 'Caminham margem acima até encontrar um vau raso. Mais tempo, menos risco.' },
+          { label: 'Esperar e acampar ali', delta: { water: -10, food: -10, baleia: -5, family: 5 },
+            result: 'Armam um acampamento simples. O descanso alivia os corpos — mas o tempo urge.' },
+        ] },
+    ],
+  },
+  cidade: {
+    label: 'Cidade', article: 'a',
+    teaser: 'Luzes distantes, ruas de gente que não conhece o sertão.',
+    x: 730, y: 210,
+    final: true,
+    arrival: 'As primeiras casas de taipa dão lugar a ruas de pedra. Há gente, barulho, um mundo que não para para olhar quem chega. A família entra na cidade como quem entra em terra estranha.',
+  },
+  abrigo: {
+    label: 'Abrigo', article: 'o',
+    teaser: 'Um rancho de retirantes à beira do caminho. Talvez descanso, talvez só mais espera.',
+    x: 700, y: 345,
+    final: true,
+    arrival: 'Um rancho improvisado recebe outras famílias na mesma travessia. Não é o fim da seca — mas é, por ora, um teto e rostos que entendem o cansaço de quem chega.',
+  },
+};
+
+/* ============================================================
+   RENDERIZAÇÃO
+   ============================================================ */
+const app = document.getElementById('app');
+
+function icon(name) {
+  const icons = {
+    water: '<path d="M10 2 C10 2 4 10.5 4 14.5 a6 6 0 0 0 12 0 C16 10.5 10 2 10 2z"/>',
+    food: '<g><line x1="10" y1="2" x2="10" y2="18"/><path d="M10 4 L6 6.2 M10 4 L14 6.2 M10 8 L6 10.2 M10 8 L14 10.2 M10 12 L6 14.2 M10 12 L14 14.2"/></g>',
+    money: '<g><circle cx="10" cy="10" r="7.2"/><circle cx="10" cy="10" r="3.4"/></g>',
+    baleia: '<g><ellipse cx="10" cy="13.2" rx="4.2" ry="3.1"/><ellipse cx="5" cy="7.4" rx="1.5" ry="2"/><ellipse cx="8.8" cy="4.6" rx="1.5" ry="2"/><ellipse cx="12.4" cy="4.6" rx="1.5" ry="2"/><ellipse cx="15.4" cy="7.4" rx="1.5" ry="2"/></g>',
+    family: '<path d="M10 17 C10 17 2.5 12.2 2.5 7.3 C2.5 4.7 4.6 3 6.8 3 C8.3 3 9.4 3.8 10 5 C10.6 3.8 11.7 3 13.2 3 C15.4 3 17.5 4.7 17.5 7.3 C17.5 12.2 10 17 10 17z"/>',
+  };
+  return `<svg class="res-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${icons[name] || ''}</svg>`;
+}
+
+function resourceBar() {
+  const r = state.resources;
+  const bar = (key, iconName, val, isPercent = true) => `
+    <div class="res-item">
+      ${icon(iconName)}
+      ${isPercent ? `<div class="res-track"><div class="res-fill" style="width:${val}%"></div></div>` : ''}
+      <span class="res-num">${isPercent ? val + '%' : val}</span>
+    </div>`;
+  return `<div class="resbar">
+    ${bar('water', 'water', r.water)}
+    ${bar('food', 'food', r.food)}
+    ${bar('money', 'money', r.money, false)}
+    ${bar('baleia', 'baleia', r.baleia)}
+    ${bar('family', 'family', r.family)}
+  </div>`;
+}
+
+function dustField(n = 16) {
+  let html = '<div class="dust-field">';
+  for (let i = 0; i < n; i++) {
+    const left = Math.random() * 100;
+    const dur = 10 + Math.random() * 12;
+    const delay = -Math.random() * dur;
+    const size = 2 + Math.random() * 3;
+    const dx = (Math.random() * 80 - 40).toFixed(0);
+    html += `<span class="dust-mote" style="left:${left}%; --dur:${dur}s; --delay:${delay}s; --s:${size}px; --dx:${dx}px;"></span>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function render() {
+  window.scrollTo(0, 0);
+  app.innerHTML = screens[state.screen]();
+}
+
+/* ---------- ENTRY ---------- */
+function screenEntry() {
+  return `
+  <div class="scene" style="justify-content:center; align-items:center; text-align:center; position:relative; padding:2rem 1.25rem;">
+    ${dustField(20)}
+    <div style="position:relative; z-index:2; max-width:640px;">
+      <p style="font-family:'Archivo'; letter-spacing:.14em; font-size:.72rem; color:var(--text-muted); margin-bottom:1.1rem;">UM PROJETO ESCOLAR · GRACILIANO RAMOS</p>
+      <h1 class="display" style="font-size:clamp(3rem,10vw,5.2rem); font-weight:600; line-height:.95; margin:0 0 1.3rem; color:var(--text);">Vidas Secas</h1>
+      <p class="display" style="font-style:italic; font-size:clamp(1.1rem,3vw,1.4rem); color:var(--accent-dark); margin:0 0 2.6rem; font-weight:400;">Entre na história. Tente sobreviver.</p>
+      <button class="btn" onclick="Actions.begin()" style="font-size:1rem; padding:1rem 2.2rem;">Começar Jornada</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- INTRO 1 ---------- */
+function screenIntro1() {
+  return `
+  <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:2rem 1.25rem;">
+    <div style="max-width:520px;">
+      <p class="display" style="font-size:clamp(1.5rem,5vw,2.1rem); line-height:1.4; color:var(--text);">
+        A terra está seca.<br>A água está acabando.<br>Sua família precisa partir.
+      </p>
+      <button class="btn" onclick="Actions.toIntro2()" style="margin-top:2.4rem;">Continuar</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- INTRO 2 (recursos) ---------- */
+function screenIntro2() {
+  const r = state.resources;
+  const row = (iconName, label, val, isPercent = true) => `
+    <div style="display:flex; align-items:center; gap:.85rem; padding:.6rem 0; border-bottom:1px solid var(--border);">
+      <span style="color:var(--accent);">${icon(iconName)}</span>
+      <span style="flex:1; text-align:left; font-size:.92rem; color:var(--text-muted);">${label}</span>
+      <span style="font-variant-numeric:tabular-nums; font-weight:600;">${val}${isPercent ? '%' : ''}</span>
+    </div>`;
+  return `
+  <div class="scene" style="justify-content:center; align-items:center; padding:2rem 1.25rem;">
+    <div style="max-width:420px; width:100%;">
+      <p class="display" style="text-align:center; font-size:1.15rem; color:var(--text-muted); margin-bottom:1.6rem; font-style:italic;">O que resta para a jornada:</p>
+      <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:1.2rem 1.4rem;">
+        ${row('water', 'Água', r.water)}
+        ${row('food', 'Comida', r.food)}
+        ${row('money', 'Dinheiro', r.money, false)}
+        ${row('baleia', 'Condição de Baleia', r.baleia)}
+        ${row('family', 'Condição da família', r.family)}
+      </div>
+      <div style="text-align:center;">
+        <button class="btn" onclick="Actions.toMap()" style="margin-top:2rem;">Continuar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- MAPA ---------- */
+function nodeStatus(id) {
+  if (state.visited.includes(id)) return 'visited';
+  if (id === state.current && state.screen !== 'map') return 'current';
+  const loc = LOCATIONS[id];
+  if (loc.final) return state.finalChoiceUnlocked ? 'available' : 'locked';
+  return state.unlocked.includes(id) ? 'available' : 'locked';
+}
+
+function mapSvg() {
+  const P = LOCATIONS;
+  const seg = (a, b, ids) => {
+    const traveled = ids.every(id => state.visited.includes(id));
+    return `<path class="trail-path ${traveled ? 'traveled' : ''}" d="M${P[a].x},${P[a].y} Q${(P[a].x+P[b].x)/2},${(P[a].y+P[b].y)/2 - 45} ${P[b].x},${P[b].y}"/>`;
+  };
+  let paths = '';
+  paths += seg('fazenda', 'estrada', ['fazenda']);
+  paths += seg('estrada', 'caatinga', ['fazenda','estrada']);
+  paths += seg('caatinga', 'rio', ['fazenda','estrada','caatinga']);
+  paths += seg('rio', 'cidade', ['fazenda','estrada','caatinga','rio']);
+  paths += seg('rio', 'abrigo', ['fazenda','estrada','caatinga','rio']);
+
+  let nodes = '';
+  for (const id in P) {
+    const loc = P[id];
+    const status = nodeStatus(id);
+    const clickable = status === 'available' || status === 'current';
+    nodes += `
+    <g class="map-node ${status}" ${clickable ? `onclick="Actions.openLocation('${id}')" tabindex="0" role="button" aria-label="${loc.label}" onkeydown="if(event.key==='Enter')Actions.openLocation('${id}')"` : ''}>
+      ${status === 'available' ? `<circle class="node-ring" cx="${loc.x}" cy="${loc.y}" r="17" fill="none" stroke="var(--accent)" stroke-width="1.5"/>` : ''}
+      <circle class="node-hit" cx="${loc.x}" cy="${loc.y}" r="12"
+        fill="${status === 'visited' ? 'var(--accent-dark)' : status === 'available' ? 'var(--accent)' : status === 'current' ? 'var(--accent)' : 'var(--bg-elevated)'}"
+        stroke="${status === 'locked' ? 'var(--border)' : 'var(--accent-dark)'}" stroke-width="1.5"/>
+      ${status === 'visited' ? `<path d="M${loc.x-4.5},${loc.y} l3,3.5 l6,-7" stroke="#F5EBD8" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` : ''}
+      <text x="${loc.x}" y="${loc.y + 30}" text-anchor="middle" font-size="12.5" fill="${status === 'locked' ? 'var(--text-muted)' : 'var(--text)'}" font-weight="${status === 'available' ? '700' : '500'}">${loc.label}</text>
+    </g>`;
+  }
+  return `<svg viewBox="0 0 800 420" class="scroll-x" style="width:100%; height:auto; min-width:640px; display:block;">${paths}${nodes}</svg>`;
+}
+
+function screenMap() {
+  return `
+  <div class="scene">
+    ${resourceBar()}
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; padding:2rem 1rem;">
+      <div class="map-wrap">
+        <p style="text-align:center; letter-spacing:.1em; font-size:.7rem; color:var(--text-muted); margin-bottom:.4rem;">O CAMINHO ATÉ AQUI</p>
+        <h2 class="display" style="text-align:center; font-size:1.6rem; margin:0 0 1.6rem;">${state.finalChoiceUnlocked ? 'Para onde seguir?' : 'Escolha o próximo passo'}</h2>
+        <div class="scroll-x">${mapSvg()}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- DETALHE DO LOCAL ---------- */
+function screenLocationDetail() {
+  const loc = LOCATIONS[state.current];
+  return `
+  <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:2rem 1.25rem;">
+    <div style="max-width:480px;">
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.6rem;">LOCAL</p>
+      <h2 class="display" style="font-size:2.2rem; margin:0 0 1rem; text-transform:uppercase; letter-spacing:.02em;">${loc.label}</h2>
+      <p class="prose-cap" style="margin:0 auto 2rem; color:var(--text-muted); line-height:1.6; font-size:1.02rem;">${loc.teaser}</p>
+      <div style="display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap;">
+        <button class="btn-ghost btn" onclick="Actions.backToMap()">Voltar ao mapa</button>
+        <button class="btn" onclick="Actions.enterLocation()">Ir para ${loc.article === 'a' ? 'a' : 'o'} ${loc.label}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- CENA (beats de narração / escolha) ---------- */
+function screenScene() {
+  const loc = LOCATIONS[state.current];
+  const beat = loc.beats[state.beatIndex];
+
+  let inner = '';
+  if (beat.type === 'narration') {
+    inner = `
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${loc.label.toUpperCase()}</p>
+      <h2 class="display" style="font-size:1.7rem; margin:0 0 1.1rem;">${beat.title}</h2>
+      <p class="prose-cap" style="color:var(--text); line-height:1.75; font-size:1.05rem;">${beat.text}</p>
+      <button class="btn" onclick="Actions.advanceBeat()" style="margin-top:2.2rem;">Continuar</button>`;
+  } else {
+    inner = `
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${loc.label.toUpperCase()}</p>
+      <h2 class="display" style="font-size:1.7rem; margin:0 0 .9rem;">${beat.title}</h2>
+      <p class="prose-cap" style="color:var(--text); line-height:1.7; font-size:1.02rem; margin-bottom:1.8rem;">${beat.text}</p>
+      <div style="display:flex; flex-direction:column; gap:.7rem; max-width:480px; margin:0 auto;">
+        ${beat.options.map((opt, i) => `<button class="choice-btn" onclick="Actions.makeChoice(${i})">${opt.label}</button>`).join('')}
+      </div>`;
+  }
+
+  return `
+  <div class="scene">
+    ${resourceBar()}
+    <div style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center; padding:2.5rem 1.25rem;">
+      <div style="max-width:560px; width:100%;">${inner}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- RESULTADO DE ESCOLHA ---------- */
+function screenChoiceResult() {
+  const r = state._lastResult;
+  return `
+  <div class="scene">
+    ${resourceBar()}
+    <div style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center; padding:2.5rem 1.25rem;">
+      <div style="max-width:520px;">
+        <p class="prose-cap" style="margin:0 auto; font-size:1.08rem; line-height:1.75; font-style:italic; color:var(--text);">${r}</p>
+        <button class="btn" onclick="Actions.afterResult()" style="margin-top:2.2rem;">Continuar</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- CHEGADA FINAL (antes do desfecho) ---------- */
+function screenArrival() {
+  const loc = LOCATIONS[state.current];
+  return `
+  <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:2rem 1.25rem;">
+    <div style="max-width:520px;">
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${loc.label.toUpperCase()}</p>
+      <p class="prose-cap display" style="margin:0 auto; font-size:1.3rem; line-height:1.7; font-style:italic;">${loc.arrival}</p>
+      <button class="btn" onclick="Actions.finish()" style="margin-top:2.4rem;">Continuar</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- FINAL ---------- */
+const ENDINGS = {
+  tragic: {
+    water: { title: 'A seca venceu', text: 'A água acabou antes da esperança. O sertão, impiedoso, não perdoa quem se demora demais em seu caminho.' },
+    family: { title: 'A seca venceu', text: 'A força que restava não foi suficiente. O peso da jornada cobrou seu preço — e a família não resistiu inteira.' },
+  },
+  hard: { title: 'Sobreviveram, mas a seca deixou marcas', text: 'Chegaram — exaustos, feridos, com as economias reduzidas a quase nada. A travessia terminou, mas o corpo ainda carrega o sertão.' },
+  good: { title: 'Chegaram', text: 'Vinte léguas de caminho, e ainda de pé. A família chega marcada pela seca, mas viva — pronta para recomeçar em outro chão.' },
+};
+
+function computeFinalEnding() {
+  if (state.endingType === 'tragic') return ENDINGS.tragic[state.endingCause];
+  const { water, food, family } = state.resources;
+  const avg = (water + food + family) / 3;
+  return avg >= 45 ? ENDINGS.good : ENDINGS.hard;
+}
+
+function screenEnding() {
+  const ending = computeFinalEnding();
+  const r = state.resources;
+  const baleiaNote = r.baleia <= 20
+    ? '<p style="color:var(--danger); font-style:italic; margin-top:.6rem;">Baleia não resistiu bem à travessia — mal conseguia acompanhar os últimos passos.</p>'
+    : '';
+
+  const decisionsHtml = state.decisions.length
+    ? `<ul style="text-align:left; margin:0; padding-left:1.1rem; color:var(--text-muted); line-height:1.85; font-size:.92rem;">
+        ${state.decisions.map(d => `<li>${d}</li>`).join('')}
+      </ul>`
+    : '';
+
+  const pathHtml = state.path.join(' → ');
+
+  return `
+  <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:3rem 1.25rem;">
+    <div style="max-width:600px; width:100%;">
+      <p style="letter-spacing:.14em; font-size:.72rem; color:var(--text-muted); margin-bottom:.8rem;">SUA JORNADA TERMINOU</p>
+      <h2 class="display" style="font-size:clamp(1.8rem,6vw,2.6rem); margin:0 0 1rem; color:${state.endingType === 'tragic' ? 'var(--danger)' : 'var(--text)'};">${ending.title}</h2>
+      <p class="prose-cap" style="margin:0 auto 1.8rem; color:var(--text); line-height:1.75; font-size:1.04rem;">${ending.text}</p>
+      ${baleiaNote}
+
+      <div class="fade-line" style="margin-top:2.2rem; text-align:left; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:1.4rem 1.6rem;">
+        <p style="font-size:.78rem; letter-spacing:.08em; color:var(--text-muted); margin:0 0 .5rem;">CAMINHO PERCORRIDO</p>
+        <p style="margin:0 0 1.1rem; font-size:.95rem;">${pathHtml}</p>
+
+        <p style="font-size:.78rem; letter-spacing:.08em; color:var(--text-muted); margin:0 0 .5rem;">PRINCIPAIS ACONTECIMENTOS</p>
+        ${decisionsHtml}
+
+        <p style="font-size:.78rem; letter-spacing:.08em; color:var(--text-muted); margin:1.2rem 0 .5rem;">RECURSOS RESTANTES</p>
+        <div style="display:flex; gap:1.2rem; flex-wrap:wrap;">
+          <span style="font-size:.88rem;">${icon('water')} ${r.water}%</span>
+          <span style="font-size:.88rem;">${icon('food')} ${r.food}%</span>
+          <span style="font-size:.88rem;">${icon('money')} ${r.money}</span>
+          <span style="font-size:.88rem;">${icon('baleia')} ${r.baleia}%</span>
+          <span style="font-size:.88rem;">${icon('family')} ${r.family}%</span>
+        </div>
+      </div>
+
+      <p class="prose-cap" style="margin:2rem auto 0; font-style:italic; color:var(--text-muted); font-size:.94rem;">Suas escolhas mostram uma pequena parte das condições enfrentadas pelos personagens de Vidas Secas.</p>
+
+      <button class="btn" onclick="Actions.restart()" style="margin-top:1.8rem;">Refazer Jornada</button>
+    </div>
+  </div>`;
+}
+
+const screens = {
+  entry: screenEntry,
+  intro1: screenIntro1,
+  intro2: screenIntro2,
+  map: screenMap,
+  locationDetail: screenLocationDetail,
+  scene: screenScene,
+  choiceResult: screenChoiceResult,
+  arrival: screenArrival,
+  ending: screenEnding,
+};
+
+/* ============================================================
+   AÇÕES
+   ============================================================ */
+const Actions = {
+  begin() { state.screen = 'intro1'; render(); },
+  toIntro2() { state.screen = 'intro2'; render(); },
+  toMap() { state.screen = 'map'; render(); },
+  backToMap() { state.screen = 'map'; render(); },
+
+  openLocation(id) {
+    state.current = id;
+    const loc = LOCATIONS[id];
+    if (loc.final) {
+      // destino final: vai direto para a chegada
+      state.path.push(loc.label);
+      state.screen = 'arrival';
+    } else {
+      state.screen = 'locationDetail';
+    }
+    render();
+  },
+
+  enterLocation() {
+    state.beatIndex = 0;
+    state.screen = 'scene';
+    render();
+  },
+
+  advanceBeat() {
+    const loc = LOCATIONS[state.current];
+    state.beatIndex++;
+    if (state.beatIndex >= loc.beats.length) {
+      completeLocation();
+    } else {
+      render();
+    }
+  },
+
+  makeChoice(i) {
+    const loc = LOCATIONS[state.current];
+    const beat = loc.beats[state.beatIndex];
+    const opt = beat.options[i];
+    let resultText, delta;
+
+    if (opt.random) {
+      const roll = Math.random();
+      let acc = 0, picked = opt.random[opt.random.length - 1];
+      for (const outcome of opt.random) {
+        acc += outcome.chance;
+        if (roll <= acc) { picked = outcome; break; }
+      }
+      delta = picked.delta;
+      resultText = picked.result;
+    } else {
+      delta = opt.delta;
+      resultText = opt.result;
+    }
+
+    applyDelta(delta);
+    state.decisions.push(`${loc.label}: ${opt.label.toLowerCase()}.`);
+    state._lastResult = resultText;
+
+    if (checkTragedy()) { render(); return; }
+
+    state.screen = 'choiceResult';
+    render();
+  },
+
+  afterResult() {
+    const loc = LOCATIONS[state.current];
+    state.beatIndex++;
+    if (state.beatIndex >= loc.beats.length) {
+      completeLocation();
+    } else {
+      state.screen = 'scene';
+      render();
+    }
+  },
+
+  finish() {
+    triggerEnding(null, null);
+    render();
+  },
+
+  restart() {
+    state = initialState();
+    render();
+  },
+};
+
+function completeLocation() {
+  const id = state.current;
+  const loc = LOCATIONS[id];
+  state.visited.push(id);
+  state.path.push(loc.label);
+
+  const idx = state.order.indexOf(id);
+  if (idx !== -1 && idx + 1 < state.order.length) {
+    state.unlocked.push(state.order[idx + 1]);
+  } else if (idx === state.order.length - 1) {
+    state.finalChoiceUnlocked = true;
+  }
+  state.screen = 'map';
+  render();
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+render();
+</script>
+</body>
+</html>
