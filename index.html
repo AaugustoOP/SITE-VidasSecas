@@ -241,7 +241,8 @@ const initialState = () => ({
   screen: 'entry', // entry | intro1 | intro2 | map | locationDetail | scene | ending
   current: null,
   beatIndex: 0,
-  resources: { water: 70, food: 60, money: 40, baleia: 90, family: 90 },
+  day: 1,
+  resources: { water: 55, food: 48, money: 25, baleia: 78, family: 72 },
   order: ['fazenda', 'estrada', 'caatinga', 'rio'],
   unlocked: ['fazenda'],
   visited: [],
@@ -263,6 +264,7 @@ function applyDelta(delta) {
 
 function checkTragedy() {
   if (state.resources.water <= 0) { triggerEnding('tragic', 'water'); return true; }
+  if (state.resources.food <= 0) { triggerEnding('tragic', 'food'); return true; }
   if (state.resources.family <= 0) { triggerEnding('tragic', 'family'); return true; }
   return false;
 }
@@ -283,15 +285,15 @@ const LOCATIONS = {
     x: 90, y: 330,
     beats: [
       { type: 'narration', title: 'A Fazenda',
-        text: 'A terra que já deu sustento agora só devolve pó. As reses secas jazem no pasto. Não chove há meses. Fabiano olha para o horizonte — não há mais nada a colher aqui.' },
-      { type: 'choice', title: 'A partida', text: 'O que a família leva para a viagem?',
+        text: 'A terra que já deu sustento agora só devolve pó. As reses secas jazem no pasto. Não chove há meses. Fabiano olha para o horizonte e se sente pouco mais que um bicho do mato — preso à terra, preso ao patrão, sem as palavras certas para dizer o que sente. Só resta partir, mais uma vez.' },
+      { type: 'choice', title: 'A partida', text: 'A trouxa é pequena e o caminho é longo. O que a família leva?',
         options: [
-          { label: 'Encher os cantis de água', delta: { water: 10, food: -10 },
+          { label: 'Encher os cantis de água', delta: { water: 8, food: -8 },
             result: 'Enchem os cantis até a boca, deixando a trouxa de farinha mais leve.' },
-          { label: 'Levar toda a farinha que sobrou', delta: { food: 10, water: -10 },
+          { label: 'Levar toda a farinha que sobrou', delta: { food: 8, water: -8 },
             result: 'Levam toda a farinha, arriscando a sede pelo caminho que ainda não conhecem.' },
-          { label: 'Levar as poucas economias guardadas', delta: { money: 15, family: -5 },
-            result: 'Fabiano esconde as moedas na cintura. Sinhá Vitória carrega o peso — e a preocupação — na cabeça.' },
+          { label: 'Levar as poucas economias guardadas', delta: { money: 8, family: -6 },
+            result: 'Fabiano esconde as poucas moedas na cintura. Sinhá Vitória carrega o peso — e a preocupação — na cabeça.' },
         ] },
     ],
   },
@@ -304,21 +306,21 @@ const LOCATIONS = {
         text: 'A estrada se estende sem fim, poeira e pedra sob os pés descalços. O sol pesa nos ombros de todos.' },
       { type: 'choice', title: 'A água está acabando', text: 'O sol está forte e ainda falta caminho. O que fazer?',
         options: [
-          { label: 'Continuar caminhando', delta: { water: -20 },
+          { label: 'Continuar caminhando', delta: { water: -26 },
             result: 'Seguem em frente, a garganta seca ardendo a cada passo.' },
           { label: 'Procurar água', random: [
-              { chance: 0.55, delta: { water: 15, food: -5 }, result: 'Encontram uma poça escondida entre as pedras. Bebem até saciar a sede.' },
-              { chance: 0.45, delta: { water: -5, family: -5 }, result: 'Nada além de pedra e poeira. O tempo perdido pesa sobre todos.' },
+              { chance: 0.4, delta: { water: 14, food: -6 }, result: 'Encontram uma poça escondida entre as pedras. Bebem até saciar a sede.' },
+              { chance: 0.6, delta: { water: -16, family: -8 }, result: 'Nada além de pedra e poeira. O tempo perdido pesa sobre todos — e a água que tinham some no calor.' },
             ] },
-          { label: 'Parar para descansar', delta: { water: -10, family: 10 },
-            result: 'Param à sombra rala de uma árvore seca. O corpo agradece — a sede cresce um pouco mais.' },
+          { label: 'Parar para descansar', delta: { water: -14, food: -6, family: 9 },
+            result: 'Param à sombra rala de uma árvore seca. O corpo agradece — mas a sede e a fome crescem um pouco mais.' },
         ] },
       { type: 'choice', title: 'O menino mais novo', text: 'O menino mais novo arrasta os pés, olhos pesados de sono e fome.',
         options: [
-          { label: 'Carregar o menino no colo', delta: { water: -5, family: 5 },
+          { label: 'Carregar o menino no colo', delta: { water: -9, family: 6 },
             result: 'Fabiano o ergue nos ombros. O peso é maior — mas os olhos do menino fecham em paz.' },
-          { label: 'Incentivá-lo a continuar andando', delta: { family: -5 },
-            result: 'Fabiano diz que ele é forte. O menino engole o choro e segue, um passo atrás do outro.' },
+          { label: 'Incentivá-lo a continuar andando', delta: { family: -9 },
+            result: 'Fabiano diz que ele é forte. O menino engole o choro e segue, um passo atrás do outro, cada vez mais devagar.' },
         ] },
     ],
   },
@@ -328,15 +330,15 @@ const LOCATIONS = {
     x: 415, y: 300,
     beats: [
       { type: 'narration', title: 'A Caatinga',
-        text: 'Os galhos secos arranham as pernas. Um vulto amarelo se move ao longe, entre a poeira.' },
-      { type: 'choice', title: 'Soldado Amarelo', text: 'Ele se aproxima.',
+        text: 'Os galhos secos arranham as pernas. Um vulto amarelo se move ao longe, entre a poeira — a farda de quem manda, mesmo em terra de ninguém.' },
+      { type: 'choice', title: 'Soldado Amarelo', text: 'Ele se aproxima. Não é a primeira vez que a farda decide o destino de gente como eles.',
         options: [
-          { label: 'Enfrentar, erguer a voz', delta: { money: -10, family: -10 },
-            result: 'Fabiano ergue a voz por um instante. O soldado ri e segue seu caminho — o medo, esse, fica.' },
-          { label: 'Desviar em silêncio', delta: { water: -5, family: -2 },
-            result: 'Fazem a volta, evitando o encontro. Mais um pedaço de chão sob os pés já cansados.' },
-          { label: 'Entregar o que carregam', delta: { money: -20, food: -10, family: 5 },
-            result: 'Entregam o pouco que têm. Menos para comer — mas a paz de seguir vivos.' },
+          { label: 'Enfrentar, erguer a voz', delta: { money: -12, family: -16, water: -5 },
+            result: 'Fabiano ergue a voz por um instante — coisa rara. O soldado ri, ameaça, e só depois segue seu caminho. O medo, esse, fica preso na garganta de todos.' },
+          { label: 'Desviar em silêncio', delta: { water: -12, family: -4 },
+            result: 'Fazem a volta, evitando o encontro, mais uma vez engolindo o orgulho. Mais um pedaço de chão sob os pés já cansados.' },
+          { label: 'Entregar o que carregam', delta: { money: -22, food: -14, family: 4 },
+            result: 'Entregam o pouco que têm, como sempre entregam. Menos para comer — mas a paz de seguir vivos por mais um dia.' },
         ] },
     ],
   },
@@ -347,23 +349,23 @@ const LOCATIONS = {
     beats: [
       { type: 'narration', title: 'O Rio',
         text: 'O leito quase seco ainda guarda um fio de água turva. Baleia caminha mais devagar a cada légua.' },
-      { type: 'choice', title: 'Baleia', text: 'Baleia está fraca. A comida que resta não será suficiente para todos.',
+      { type: 'choice', title: 'Baleia', text: 'Baleia está fraca, as costelas à mostra. A comida que resta não será suficiente para todos.',
         options: [
-          { label: 'Dar comida para Baleia', delta: { food: -15, baleia: 25, family: -5 },
-            result: 'Dividem o pouco que têm com ela. Baleia ergue a cabeça, os olhos ainda vivos.' },
-          { label: 'Guardar comida para a família', delta: { food: -5, baleia: -20, family: 5 },
-            result: 'Guardam a comida para os meninos. Baleia segue mesmo assim, cambaleando atrás.' },
+          { label: 'Dar comida para Baleia', delta: { food: -18, baleia: 28, family: -6 },
+            result: 'Dividem o pouco que têm com ela. Baleia ergue a cabeça, os olhos ainda vivos — talvez os únicos de verdade compreensivos naquele caminho.' },
+          { label: 'Guardar comida para a família', delta: { food: -6, baleia: -26, family: 4 },
+            result: 'Guardam a comida para os meninos. Baleia segue mesmo assim, cambaleando atrás, sem entender por quê.' },
         ] },
       { type: 'choice', title: 'A travessia', text: 'É preciso atravessar — mas a correnteza ainda esconde perigo.',
         options: [
           { label: 'Atravessar agora', random: [
-              { chance: 0.55, delta: {}, result: 'Atravessam com cuidado. A água fria bate na cintura, mas todos chegam à outra margem.' },
-              { chance: 0.45, delta: { family: -15, money: -10 }, result: 'A correnteza é mais forte do que parecia. Levam parte do que carregavam — e um susto que não passa.' },
+              { chance: 0.42, delta: { food: -4 }, result: 'Atravessam com cuidado. A água fria bate na cintura, mas todos chegam à outra margem.' },
+              { chance: 0.58, delta: { family: -20, money: -14, food: -6 }, result: 'A correnteza é mais forte do que parecia. Levam parte do que carregavam — e um susto que não passa.' },
             ] },
-          { label: 'Procurar uma passagem segura', delta: { water: -15, food: -10 },
-            result: 'Caminham margem acima até encontrar um vau raso. Mais tempo, menos risco.' },
-          { label: 'Esperar e acampar ali', delta: { water: -10, food: -10, baleia: -5, family: 5 },
-            result: 'Armam um acampamento simples. O descanso alivia os corpos — mas o tempo urge.' },
+          { label: 'Procurar uma passagem segura', delta: { water: -18, food: -12 },
+            result: 'Caminham margem acima até encontrar um vau raso. Mais tempo, menos risco — e menos do pouco que ainda tinham.' },
+          { label: 'Esperar e acampar ali', delta: { water: -14, food: -13, baleia: -8, family: 4 },
+            result: 'Armam um acampamento simples. O descanso alivia os corpos — mas o tempo urge, e o tempo, no sertão, também é fome.' },
         ] },
     ],
   },
@@ -372,7 +374,7 @@ const LOCATIONS = {
     teaser: 'Luzes distantes, ruas de gente que não conhece o sertão.',
     x: 730, y: 210,
     final: true,
-    arrival: 'As primeiras casas de taipa dão lugar a ruas de pedra. Há gente, barulho, um mundo que não para para olhar quem chega. A família entra na cidade como quem entra em terra estranha.',
+    arrival: 'As primeiras casas de taipa dão lugar a ruas de pedra. Há gente, barulho, um mundo que não para para olhar quem chega. Sinhá Vitória, por um instante, lembra de uma cama de lastro que viu numa vitrine, anos atrás — um sonho antigo que a poeira do caminho não apagou. A família entra na cidade como quem entra em terra estranha.',
   },
   abrigo: {
     label: 'Abrigo', article: 'o',
@@ -408,6 +410,7 @@ function resourceBar() {
       <span class="res-num">${isPercent ? val + '%' : val}</span>
     </div>`;
   return `<div class="resbar">
+    <span style="font-size:.72rem; letter-spacing:.08em; color:var(--text-muted); margin-right:.3rem;">DIA ${state.day}</span>
     ${bar('water', 'water', r.water)}
     ${bar('food', 'food', r.food)}
     ${bar('money', 'money', r.money, false)}
@@ -445,6 +448,30 @@ function screenEntry() {
       <h1 class="display" style="font-size:clamp(3rem,10vw,5.2rem); font-weight:600; line-height:.95; margin:0 0 1.3rem; color:var(--text);">Vidas Secas</h1>
       <p class="display" style="font-style:italic; font-size:clamp(1.1rem,3vw,1.4rem); color:var(--accent-dark); margin:0 0 2.6rem; font-weight:400;">Entre na história. Tente sobreviver.</p>
       <button class="btn" onclick="Actions.begin()" style="font-size:1rem; padding:1rem 2.2rem;">Começar Jornada</button>
+      <div style="margin-top:1.6rem;">
+        <button onclick="Actions.showAbout()" style="background:none; border:none; color:var(--text-muted); font-size:.8rem; text-decoration:underline; text-underline-offset:3px; cursor:pointer; font-family:'Archivo';">Sobre a obra</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- SOBRE A OBRA ---------- */
+function screenAbout() {
+  return `
+  <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:2.5rem 1.25rem;">
+    <div style="max-width:560px;">
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.8rem;">SOBRE A OBRA</p>
+      <h2 class="display" style="font-size:1.8rem; margin:0 0 1.3rem;">Vidas Secas</h2>
+      <p class="prose-cap" style="margin:0 auto 1rem; text-align:left; color:var(--text); line-height:1.75; font-size:.98rem;">
+        Publicado em 1938 por Graciliano Ramos, o romance acompanha Fabiano, sua mulher Sinhá Vitória, dois meninos sem nome fixo e a cadela Baleia — uma família de retirantes que atravessa, repetidas vezes, o ciclo de seca, fuga e retorno no sertão de Alagoas.
+      </p>
+      <p class="prose-cap" style="margin:0 auto 1rem; text-align:left; color:var(--text); line-height:1.75; font-size:.98rem;">
+        É uma obra da segunda fase do Modernismo brasileiro, marcada pela prosa seca e enxuta, pela crítica social ao abandono do sertanejo e pelo uso do discurso indireto livre — o narrador entra nos pensamentos de personagens que mal têm vocabulário para nomear o que sentem, inclusive os de Baleia.
+      </p>
+      <p class="prose-cap" style="margin:0 auto 1.6rem; text-align:left; color:var(--text-muted); line-height:1.75; font-size:.92rem; font-style:italic;">
+        Este protótipo não recria os capítulos do livro. Ele transforma seus temas centrais — escassez, submissão, silêncio, sobrevivência — em decisões que você toma, sentindo o peso de cada escolha.
+      </p>
+      <button class="btn" onclick="Actions.backFromAbout()">Voltar</button>
     </div>
   </div>`;
 }
@@ -457,7 +484,10 @@ function screenIntro1() {
       <p class="display" style="font-size:clamp(1.5rem,5vw,2.1rem); line-height:1.4; color:var(--text);">
         A terra está seca.<br>A água está acabando.<br>Sua família precisa partir.
       </p>
-      <button class="btn" onclick="Actions.toIntro2()" style="margin-top:2.4rem;">Continuar</button>
+      <p class="prose-cap" style="margin:1.6rem auto 0; color:var(--text-muted); font-size:.94rem; line-height:1.7;">
+        Sertão de Alagoas, anos 1930. Não é a primeira seca, nem será a última. Fabiano, Sinhá Vitória, os dois meninos e a cadela Baleia deixam para trás mais um pedaço de chão que não deu certo.
+      </p>
+      <button class="btn" onclick="Actions.toIntro2()" style="margin-top:2rem;">Continuar</button>
     </div>
   </div>`;
 }
@@ -623,17 +653,18 @@ function screenArrival() {
 const ENDINGS = {
   tragic: {
     water: { title: 'A seca venceu', text: 'A água acabou antes da esperança. O sertão, impiedoso, não perdoa quem se demora demais em seu caminho.' },
+    food: { title: 'A fome venceu', text: 'Não havia mais o que dividir. A fome, essa companheira antiga do sertanejo, chegou primeiro que a cidade.' },
     family: { title: 'A seca venceu', text: 'A força que restava não foi suficiente. O peso da jornada cobrou seu preço — e a família não resistiu inteira.' },
   },
   hard: { title: 'Sobreviveram, mas a seca deixou marcas', text: 'Chegaram — exaustos, feridos, com as economias reduzidas a quase nada. A travessia terminou, mas o corpo ainda carrega o sertão.' },
-  good: { title: 'Chegaram', text: 'Vinte léguas de caminho, e ainda de pé. A família chega marcada pela seca, mas viva — pronta para recomeçar em outro chão.' },
+  good: { title: 'Chegaram', text: 'Léguas de caminho, e ainda de pé. A família chega marcada pela seca, mas viva — pronta para recomeçar em outro chão, sabendo que a seca sempre volta.' },
 };
 
 function computeFinalEnding() {
   if (state.endingType === 'tragic') return ENDINGS.tragic[state.endingCause];
   const { water, food, family } = state.resources;
   const avg = (water + food + family) / 3;
-  return avg >= 45 ? ENDINGS.good : ENDINGS.hard;
+  return avg >= 58 ? ENDINGS.good : ENDINGS.hard;
 }
 
 function screenEnding() {
@@ -651,11 +682,12 @@ function screenEnding() {
 
   const pathHtml = state.path.join(' → ');
 
+  const isLoss = state.endingType === 'tragic';
   return `
-  <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:3rem 1.25rem;">
+  <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:3rem 1.25rem; ${isLoss ? 'background:radial-gradient(ellipse at center, color-mix(in srgb, var(--danger) 14%, transparent), transparent 72%);' : ''}">
     <div style="max-width:600px; width:100%;">
-      <p style="letter-spacing:.14em; font-size:.72rem; color:var(--text-muted); margin-bottom:.8rem;">SUA JORNADA TERMINOU</p>
-      <h2 class="display" style="font-size:clamp(1.8rem,6vw,2.6rem); margin:0 0 1rem; color:${state.endingType === 'tragic' ? 'var(--danger)' : 'var(--text)'};">${ending.title}</h2>
+      <p style="letter-spacing:.14em; font-size:.72rem; color:${isLoss ? 'var(--danger)' : 'var(--text-muted)'}; margin-bottom:.8rem;">${isLoss ? 'A JORNADA TERMINOU AQUI' : 'SUA JORNADA TERMINOU'}</p>
+      <h2 class="display" style="font-size:clamp(1.8rem,6vw,2.6rem); margin:0 0 1rem; color:${isLoss ? 'var(--danger)' : 'var(--text)'};">${ending.title}</h2>
       <p class="prose-cap" style="margin:0 auto 1.8rem; color:var(--text); line-height:1.75; font-size:1.04rem;">${ending.text}</p>
       ${baleiaNote}
 
@@ -685,6 +717,7 @@ function screenEnding() {
 
 const screens = {
   entry: screenEntry,
+  about: screenAbout,
   intro1: screenIntro1,
   intro2: screenIntro2,
   map: screenMap,
@@ -700,6 +733,8 @@ const screens = {
    ============================================================ */
 const Actions = {
   begin() { state.screen = 'intro1'; render(); },
+  showAbout() { state._returnTo = state.screen; state.screen = 'about'; render(); },
+  backFromAbout() { state.screen = state._returnTo || 'entry'; render(); },
   toIntro2() { state.screen = 'intro2'; render(); },
   toMap() { state.screen = 'map'; render(); },
   backToMap() { state.screen = 'map'; render(); },
@@ -790,6 +825,11 @@ function completeLocation() {
   const loc = LOCATIONS[id];
   state.visited.push(id);
   state.path.push(loc.label);
+  state.day += 1;
+
+  // a travessia cobra seu preço mesmo entre um evento e outro
+  applyDelta({ water: -7, food: -6 });
+  if (checkTragedy()) { render(); return; }
 
   const idx = state.order.indexOf(id);
   if (idx !== -1 && idx + 1 < state.order.length) {
