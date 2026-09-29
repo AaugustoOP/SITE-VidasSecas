@@ -24,7 +24,7 @@
     --border: #C2A876;
     --olive: #6B7052;
     --danger: #7C2E1E;
-    --grain-opacity: 0.5;
+    --grain-opacity: 0.24;
   }
   html { scroll-padding-top: env(safe-area-inset-top, 0px); }
 
@@ -94,7 +94,7 @@
   /* ---------- vignette ---------- */
   .vignette {
     position: fixed; inset: 0; z-index: 55; pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.35) 100%);
+    background: radial-gradient(ellipse at center, transparent 48%, rgba(0,0,0,0.22) 100%);
   }
 
   /* ---------- crack texture divider ---------- */
@@ -108,16 +108,17 @@
     flex-direction: column;
     position: relative;
     overflow: hidden;
-    animation: sceneIn 900ms cubic-bezier(.16,.9,.35,1) both;
+    animation: sceneIn 650ms cubic-bezier(.16,.9,.35,1) both;
   }
   .scene > *:not(.scene-bg) { position: relative; z-index: 1; }
-  .scene-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-  .scene-bg svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 72%; opacity: .6; }
+  .scene-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: radial-gradient(ellipse at center top, color-mix(in srgb, var(--bg-card) 42%, transparent), transparent 62%), linear-gradient(180deg, color-mix(in srgb, var(--bg-elevated) 22%, transparent), transparent 46%); }
+  .scene-bg::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 18%, color-mix(in srgb, var(--bg) 14%, transparent) 62%, color-mix(in srgb, var(--bg) 32%, transparent) 100%); pointer-events:none; }
+  .scene-bg svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 72%; opacity: .67; filter:saturate(.9) contrast(.98); transform:translateZ(0); }
   @media (min-width: 640px) {
-    .scene-bg svg { height: 58%; opacity: .55; }
+    .scene-bg svg { height: 58%; opacity: .62; }
   }
   @media (min-width: 1024px) {
-    .scene-bg svg { height: 48%; opacity: .5; }
+    .scene-bg svg { height: 48%; opacity: .56; }
   }
   @keyframes sway { 0%,100% { transform: rotate(-1.4deg); } 50% { transform: rotate(1.4deg); } }
   @keyframes flicker { 0%,100% { opacity: .35; transform: scale(1); } 50% { opacity: .6; transform: scale(1.05); } }
@@ -172,8 +173,8 @@
     background: var(--accent);
     color: #F5EBD8;
   }
-  .btn:hover { transform: translateY(-1px); background: var(--accent-dark); }
-  .btn:active { transform: translateY(0); }
+  .btn:hover { transform: translateY(-2px); background: var(--accent-dark); box-shadow: 0 6px 18px color-mix(in srgb, var(--accent-dark) 16%, transparent); }
+  .btn:active { transform: translateY(0); box-shadow:none; }
   .btn-ghost {
     background: transparent;
     color: var(--text);
@@ -193,10 +194,15 @@
     cursor: pointer;
     transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
   }
-  .choice-btn:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--bg-card)); transform: translateX(2px); }
+  .choice-btn:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--bg-card)); transform: translateY(-1px); box-shadow: 0 5px 16px color-mix(in srgb, var(--accent-dark) 9%, transparent); }
+  .choice-btn:active { transform:translateY(0); box-shadow:none; }
   .choice-btn .choice-consequence {
     display: block; margin-top: .3rem; font-size: .78rem; color: var(--text-muted); font-style: italic;
   }
+  .result-changes { display:flex; justify-content:center; flex-wrap:wrap; gap:.5rem; margin:1.25rem auto 0; }
+  .result-change { display:inline-flex; align-items:center; padding:.34rem .58rem; border-radius:999px; font-size:.72rem; border:1px solid var(--border); background:var(--bg-card); color:var(--text-muted); }
+  .result-change.up { color:var(--olive); border-color:color-mix(in srgb, var(--olive) 45%, var(--border)); }
+  .result-change.down { color:var(--danger); border-color:color-mix(in srgb, var(--danger) 35%, var(--border)); }
 
   /* ---------- resource bar ---------- */
   .resbar {
@@ -215,14 +221,23 @@
   }
   .res-fill { height: 100%; background: var(--accent); transition: width 500ms ease; }
   .res-num { font-size: .72rem; color: var(--text-muted); font-variant-numeric: tabular-nums; min-width: 26px; }
+  .res-item { position:relative; }
+  .res-name { display:none; font-size:.68rem; color:var(--text-muted); letter-spacing:.02em; }
+  .res-item.low .res-fill { animation: lowPulse 1.8s ease-in-out infinite; }
+  .res-item.low .res-num { color:var(--danger); font-weight:600; }
+  @keyframes lowPulse { 0%,100% { opacity:1; } 50% { opacity:.55; } }
+  @media (min-width:760px) {
+    .res-name { display:inline; }
+    .res-item { min-width:108px; }
+  }
 
   /* ---------- capítulos ---------- */
   .chapters-panel { margin: 2rem auto 0; max-width: 760px; padding-top: 1.2rem; }
   .chapters-heading { margin-bottom:1rem; color:var(--text-muted); }
   .chapters-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; text-align:left; }
   .chapter-button:last-child { grid-column:1 / -1; justify-self:center; width:calc(50% - .375rem); }
-  .chapter-button { width:100%; border:1px solid var(--border); background:var(--bg-card); color:var(--text); border-radius:10px; padding:1rem 1.05rem; cursor:pointer; text-align:left; transition:transform .18s ease,border-color .18s ease,background .18s ease; font-family:'Archivo',sans-serif; }
-  .chapter-button:hover { transform:translateY(-2px); border-color:var(--accent); background:var(--bg-elevated); }
+  .chapter-button { width:100%; border:1px solid var(--border); background:color-mix(in srgb, var(--bg-card) 92%, transparent); color:var(--text); border-radius:10px; padding:1.05rem 1.1rem; cursor:pointer; text-align:left; transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease; font-family:'Archivo',sans-serif; box-shadow:0 2px 10px color-mix(in srgb, #000 6%, transparent); }
+  .chapter-button:hover { transform:translateY(-3px); border-color:var(--accent); background:var(--bg-elevated); box-shadow:0 8px 20px color-mix(in srgb, #000 8%, transparent); }
   .chapter-number { display:block; font-size:.68rem; letter-spacing:.11em; color:var(--accent); font-weight:700; margin-bottom:.32rem; }
   .chapter-title { display:block; font-family:'Fraunces',serif; font-size:1.02rem; font-weight:600; line-height:1.2; }
   .chapter-hint { display:block; margin-top:.45rem; font-size:.68rem; color:var(--text-muted); }
@@ -251,9 +266,16 @@
 
   /* ---------- map ---------- */
   .map-wrap { max-width: 900px; margin: 0 auto; width: 100%; }
+  .map-legend { display:flex; justify-content:center; flex-wrap:wrap; gap:1rem; margin:0 auto .9rem; color:var(--text-muted); font-size:.7rem; letter-spacing:.03em; }
+  .map-legend span { display:inline-flex; align-items:center; gap:.4rem; }
+  .legend-dot { width:8px; height:8px; border-radius:50%; display:inline-block; border:1px solid var(--border); }
+  .legend-dot.available { background:var(--accent); border-color:var(--accent-dark); }
+  .legend-dot.visited { background:var(--accent-dark); border-color:var(--accent-dark); }
+  .legend-dot.locked { background:var(--bg-elevated); }
   .map-node circle.node-hit { cursor: pointer; }
   .map-node text { font-family: 'Archivo', sans-serif; }
   .map-node.locked { opacity: .38; }
+  .map-node text { paint-order:stroke; stroke:color-mix(in srgb, var(--bg) 70%, transparent); stroke-width:3px; stroke-linejoin:round; }
   .map-node.available circle.node-ring { animation: pulse 2.6s ease-in-out infinite; }
   @media (prefers-reduced-motion: reduce) { .map-node.available circle.node-ring { animation: none; } }
   @keyframes pulse {
@@ -267,6 +289,13 @@
   .scroll-x { overflow-x: auto; }
 
   .prose-cap { max-width: 62ch; }
+  .scene > div[style*="max-width"] { isolation:isolate; }
+  .btn, .choice-btn, .chapter-button, .chapter-nav-btn { -webkit-appearance:none; }
+  @media (max-width:560px) {
+    .resbar { gap:.75rem; padding:.65rem .8rem; }
+    .res-item { min-width:72px; }
+    .res-track { width:40px; }
+  }
 
   .fade-line { position:relative; }
   .fade-line::after {
@@ -317,7 +346,7 @@ const initialState = () => ({
   current: null,
   beatIndex: 0,
   day: 1,
-  resources: { water: 60, food: 55, money: 25, baleia: 78, family: 78 },
+  resources: { water: 58, food: 53, money: 25, baleia: 76, family: 76 },
   order: ['fazenda', 'estrada', 'caatinga', 'vila', 'rio'],
   unlocked: ['fazenda'],
   visited: [],
@@ -327,6 +356,7 @@ const initialState = () => ({
   endingType: null,
   endingCause: null,
   chapterOpen: null,
+  _lastDelta: null,
 });
 let state = initialState();
 
@@ -470,25 +500,25 @@ const LOCATIONS = {
         text: 'A estrada se estende sem fim, poeira e pedra sob os pés descalços. O sol pesa nos ombros de todos.' },
       { type: 'choice', title: 'A água está acabando', text: 'O sol está forte e ainda falta caminho. O que fazer?',
         options: [
-          { label: 'Continuar caminhando', delta: { water: -20 },
+          { label: 'Continuar caminhando', delta: { water: -22 },
             result: 'Seguem em frente, a garganta seca ardendo a cada passo.' },
           { label: 'Procurar água', random: [
               { chance: 0.45, delta: { water: 14, food: -5 }, result: 'Encontram uma poça escondida entre as pedras. Bebem até saciar a sede.' },
               { chance: 0.55, delta: { water: -10, family: -5 }, result: 'Nada além de pedra e poeira. O tempo perdido pesa sobre todos.' },
             ] },
-          { label: 'Parar para descansar', delta: { water: -10, food: -5, family: 8 },
+          { label: 'Parar para descansar', delta: { water: -11, food: -6, family: 8 },
             result: 'Param à sombra rala de uma árvore seca. O corpo agradece — a sede e a fome crescem um pouco mais.' },
         ] },
       { type: 'choice', title: 'O menino mais novo', text: 'O menino mais novo arrasta os pés, olhos pesados de sono e fome.',
         options: [
-          { label: 'Carregar o menino no colo', delta: { water: -7, family: 6 },
+          { label: 'Carregar o menino no colo', delta: { water: -8, family: 6 },
             result: 'Fabiano o ergue nos ombros. O peso é maior — mas os olhos do menino fecham em paz.' },
           { label: 'Incentivá-lo a continuar andando', delta: { family: -7 },
             result: 'Fabiano diz que ele é forte. O menino engole o choro e segue, um passo atrás do outro, cada vez mais devagar.' },
         ] },
       { type: 'choice', title: 'Uma palavra estranha', text: 'O menino mais velho repete baixinho uma palavra que ouviu não sabe onde: "inferno". Pergunta o que ela quer dizer.',
         options: [
-          { label: 'Tentar explicar, do jeito que dá', delta: { water: -5, family: 7 },
+          { label: 'Tentar explicar, do jeito que dá', delta: { water: -6, family: 7 },
             result: 'Fabiano gagueja, procura as palavras que não tem. Diz qualquer coisa sobre fogo e castigo. O menino não entende direito — mas gosta de ter sido respondido.' },
           { label: 'Dizer que não sabe, e seguir andando', delta: { family: -6 },
             result: 'Fabiano resmunga que não sabe, que ninguém nunca lhe explicou nada também. O menino guarda a palavra estranha para si, como guarda tantas outras.' },
@@ -506,9 +536,9 @@ const LOCATIONS = {
         options: [
           { label: 'Enfrentar, erguer a voz', delta: { money: -10, family: -12, water: -4 },
             result: 'Fabiano ergue a voz por um instante — coisa rara. O soldado ri, ameaça, e só depois segue seu caminho. O medo, esse, fica preso na garganta de todos.' },
-          { label: 'Desviar em silêncio', delta: { water: -8, family: -3 },
+          { label: 'Desviar em silêncio', delta: { water: -9, family: -3 },
             result: 'Fazem a volta, evitando o encontro, mais uma vez engolindo o orgulho. Mais um pedaço de chão sob os pés já cansados.' },
-          { label: 'Entregar o que carregam', delta: { money: -18, food: -10, family: 4 },
+          { label: 'Entregar o que carregam', delta: { money: -18, food: -11, family: 4 },
             result: 'Entregam o pouco que têm, como sempre entregam. Menos para comer — mas a paz de seguir vivos por mais um dia.' },
         ] },
       { type: 'narration', title: 'O círculo',
@@ -553,7 +583,7 @@ const LOCATIONS = {
         options: [
           { label: 'Dar comida para Baleia', delta: { food: -14, baleia: 28, family: -4 },
             result: 'Dividem o pouco que têm com ela. Baleia ergue a cabeça, os olhos ainda vivos — talvez os únicos de verdade compreensivos naquele caminho.' },
-          { label: 'Guardar comida para a família', delta: { food: -5, baleia: -22, family: 3 },
+          { label: 'Guardar comida para a família', delta: { food: -6, baleia: -22, family: 3 },
             result: 'Guardam a comida para os meninos. Baleia segue mesmo assim, cambaleando atrás, sem entender por quê.' },
         ] },
       { type: 'choice', title: 'A travessia', text: 'É preciso atravessar — mas a correnteza ainda esconde perigo.',
@@ -562,9 +592,9 @@ const LOCATIONS = {
               { chance: 0.55, delta: { food: -3 }, result: 'Atravessam com cuidado. A água fria bate na cintura, mas todos chegam à outra margem.' },
               { chance: 0.45, delta: { family: -14, money: -10, food: -4 }, result: 'A correnteza é mais forte do que parecia. Levam parte do que carregavam — e um susto que não passa.' },
             ] },
-          { label: 'Procurar uma passagem segura', delta: { water: -14, food: -9 },
+          { label: 'Procurar uma passagem segura', delta: { water: -15, food: -10 },
             result: 'Caminham margem acima até encontrar um vau raso. Mais tempo, menos risco — e menos do pouco que ainda tinham.' },
-          { label: 'Esperar e acampar ali', delta: { water: -10, food: -9, baleia: -6, family: 4 },
+          { label: 'Esperar e acampar ali', delta: { water: -11, food: -10, baleia: -6, family: 4 },
             result: 'Armam um acampamento simples. O descanso alivia os corpos — mas o tempo urge, e o tempo, no sertão, também é fome.' },
         ] },
       { type: 'choice', title: 'A doença', text: 'Nos dias que seguem, Baleia enfraquece ainda mais. As pernas tremem, os olhos ficam vidrados e distantes. Fabiano teme a doença que às vezes mata os cachorros do sertão.',
@@ -614,190 +644,284 @@ function icon(name) {
 
 function resourceBar() {
   const r = state.resources;
-  const bar = (key, iconName, val, isPercent = true) => `
-    <div class="res-item">
+  const bar = (key, iconName, label, val, isPercent = true) => `
+    <div class="res-item ${isPercent && val <= 20 ? 'low' : ''}" title="${label}: ${isPercent ? val + '%' : val}" aria-label="${label}: ${isPercent ? val + '%' : val}">
       ${icon(iconName)}
+      <span class="res-name">${label}</span>
       ${isPercent ? `<div class="res-track"><div class="res-fill" style="width:${val}%"></div></div>` : ''}
-      <span class="res-num">${isPercent ? val + '%' : val}</span>
+      <span class="res-num">${isPercent ? val + '%' : 'R$ ' + val}</span>
     </div>`;
   return `<div class="resbar">
     <span style="font-size:.72rem; letter-spacing:.08em; color:var(--text-muted); margin-right:.3rem;">DIA ${state.day}</span>
-    ${bar('water', 'water', r.water)}
-    ${bar('food', 'food', r.food)}
-    ${bar('money', 'money', r.money, false)}
-    ${bar('baleia', 'baleia', r.baleia)}
-    ${bar('family', 'family', r.family)}
+    ${bar('water', 'water', 'Água', r.water)}
+    ${bar('food', 'food', 'Comida', r.food)}
+    ${bar('money', 'money', 'Dinheiro', r.money, false)}
+    ${bar('baleia', 'baleia', 'Baleia', r.baleia)}
+    ${bar('family', 'family', 'Família', r.family)}
   </div>`;
 }
 
 function bgFor(id) {
   const c = 'var(--olive)';
   const b = 'var(--border)';
-  const cactus = (x, y, s, dur, delay, op) => `<g class="sway-el" style="animation:sway ${dur}s ease-in-out infinite ${delay}s; transform-origin:${x}px ${y}px;" opacity="${op}">
-    <path d="M${x},${y} C${x - 10 * s},${y - 45 * s} ${x + 10 * s},${y - 60 * s} ${x},${y - 90 * s}" stroke="${c}" stroke-width="${6 * s}" fill="none" stroke-linecap="round"/>
-    <path d="M${x},${y - 50 * s} C${x - 12 * s},${y - 58 * s} ${x - 20 * s},${y - 72 * s} ${x - 18 * s},${y - 90 * s}" stroke="${c}" stroke-width="${4 * s}" fill="none" stroke-linecap="round"/>
-    <path d="M${x},${y - 40 * s} C${x + 14 * s},${y - 48 * s} ${x + 22 * s},${y - 62 * s} ${x + 20 * s},${y - 78 * s}" stroke="${c}" stroke-width="${4 * s}" fill="none" stroke-linecap="round"/>
+  const t = 'var(--text)';
+  const a = 'var(--accent)';
+  const ad = 'var(--accent-dark)';
+  const as = 'var(--accent-soft)';
+
+  const cactus = (x, y, s, dur, delay, op = .55) => `<g class="sway-el" style="animation:sway ${dur}s ease-in-out infinite ${delay}s; transform-origin:${x}px ${y}px;" opacity="${op}">
+    <path d="M${x},${y} C${x - 10 * s},${y - 45 * s} ${x + 10 * s},${y - 60 * s} ${x},${y - 92 * s}" stroke="${c}" stroke-width="${6 * s}" fill="none" stroke-linecap="round"/>
+    <path d="M${x},${y - 51 * s} C${x - 12 * s},${y - 58 * s} ${x - 20 * s},${y - 70 * s} ${x - 18 * s},${y - 90 * s}" stroke="${c}" stroke-width="${4 * s}" fill="none" stroke-linecap="round"/>
+    <path d="M${x},${y - 41 * s} C${x + 14 * s},${y - 48 * s} ${x + 22 * s},${y - 62 * s} ${x + 20 * s},${y - 79 * s}" stroke="${c}" stroke-width="${4 * s}" fill="none" stroke-linecap="round"/>
   </g>`;
-  const ballCactus = (x, y, r) => `<g opacity=".4">
-    <ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 0.85}" fill="none" stroke="${c}" stroke-width="2"/>
-    <path d="M${x - r * 0.6},${y - r * 0.6} L${x - r * 0.6},${y - r * 1.25} M${x},${y - r * 0.85} L${x},${y - r * 1.55} M${x + r * 0.6},${y - r * 0.6} L${x + r * 0.6},${y - r * 1.25}" stroke="${c}" stroke-width="1.5"/>
+
+  const thornBush = (x, y, s = 1, op = .35) => `<g opacity="${op}">
+    <path d="M${x},${y} C${x-14*s},${y-26*s} ${x-8*s},${y-52*s} ${x+1*s},${y-70*s} C${x+9*s},${y-51*s} ${x+23*s},${y-31*s} ${x+19*s},${y}" fill="none" stroke="${c}" stroke-width="${3.2*s}" stroke-linecap="round"/>
+    <path d="M${x-8*s},${y-24*s} L${x-25*s},${y-34*s} M${x+7*s},${y-40*s} L${x+22*s},${y-50*s} M${x+1*s},${y-52*s} L${x-9*s},${y-63*s}" stroke="${c}" stroke-width="${2.4*s}" stroke-linecap="round"/>
   </g>`;
-  const house = (x, y, w, roofH, op) => {
-    const wallH = 55, wallTop = y - wallH, roofTop = wallTop - roofH, midX = x + w / 2;
-    return `<g opacity="${op}">
-      <path d="M${x - 6},${wallTop} L${midX},${roofTop} L${x + w + 6},${wallTop} Z" fill="${b}"/>
-      <rect x="${x}" y="${wallTop}" width="${w}" height="${wallH}" fill="${b}" opacity=".85"/>
-      <rect x="${x + w * 0.6}" y="${wallTop + wallH * 0.28}" width="${w * 0.2}" height="${wallH * 0.3}" fill="var(--bg)" opacity=".6"/>
-      <rect x="${x + w * 0.16}" y="${wallTop + wallH * 0.48}" width="${w * 0.22}" height="${wallH * 0.52}" fill="var(--bg)" opacity=".5"/>
-    </g>`;
-  };
+
   const reed = (x, y, h, delay) => `<path d="M${x},${y} C${x - 4},${y - h * 0.5} ${x + 6},${y - h * 0.7} ${x - 2},${y - h}" stroke="${c}" stroke-width="2" fill="none" opacity=".45" class="sway-el" style="animation:sway ${4 + delay}s ease-in-out infinite ${delay}s; transform-origin:${x}px ${y}px;"/>`;
-  const stalks = Array.from({ length: 9 }, (_, i) => {
-    const x = 300 + i * 15;
-    return `<path d="M${x},430 C${x - 3},420 ${x + 3},416 ${x},409" stroke="${c}" stroke-width="2" opacity=".42" fill="none" stroke-linecap="round"/>`;
+  const dryGrass = (x, y, s = 1, op = .36) => `<g opacity="${op}" stroke="${b}" stroke-linecap="round" fill="none">
+    <path d="M${x},${y} q${-8*s},${-18*s} ${-3*s},${-34*s}" stroke-width="${2*s}"/>
+    <path d="M${x+5*s},${y} q${6*s},${-15*s} ${2*s},${-28*s}" stroke-width="${1.8*s}"/>
+    <path d="M${x+10*s},${y} q${12*s},${-12*s} ${10*s},${-24*s}" stroke-width="${1.5*s}"/>
+  </g>`;
+
+  const person = (x, y, s = 1, op = .45) => `<g opacity="${op}" fill="${t}" stroke="${t}" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="${x}" cy="${y-25*s}" r="${4*s}"/>
+    <path d="M${x},${y-20*s} L${x},${y-7*s} M${x},${y-15*s} L${x-6*s},${y-9*s} M${x},${y-15*s} L${x+6*s},${y-10*s} M${x},${y-7*s} L${x-5*s},${y} M${x},${y-7*s} L${x+5*s},${y}" stroke-width="${2.6*s}" fill="none"/>
+  </g>`;
+
+  const bird = (x, y, s = 1, op = .28) => `<path d="M${x},${y} q${7*s},${-5*s} ${14*s},0 q${-7*s},${-1*s} ${-14*s},0" fill="${t}" opacity="${op}" class="fly-el" style="animation:flyLoop ${8 + s * 3}s ease-in-out infinite;"/>`;
+
+  const groundCracks = (offset = 0, count = 8) => Array.from({length: count}, (_, i) => {
+    const x = 40 + i * 98 + offset;
+    const y = 340 + (i % 3) * 18;
+    return `<path d="M${x},${y} q${-6},${9} ${-2},${18} m${2},${-8} q${11},${4} ${17},${-3} M${x+22},${y+14} q${6},${8} ${4},${15}" stroke="${b}" stroke-width="1.2" fill="none" opacity=".25"/>`;
   }).join('');
+
+  const distantHills = `<path d="M0,270 C120,236 200,260 302,246 C408,231 472,259 570,242 C650,228 716,250 800,238 L800,400 L0,400 Z" fill="url(#farHill)"/>
+    <path d="M0,300 C140,270 275,293 400,278 C522,263 666,284 800,266 L800,400 L0,400 Z" fill="url(#nearHill)" opacity=".72"/>`;
+
   const scenes = {
     fazenda: `<svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMax slice">
-      <circle cx="650" cy="95" r="90" fill="url(#sunGlow)"/>
-      <path d="M0,268 C120,232 200,258 260,250 C360,238 420,262 480,250 C560,236 650,260 800,244 L800,500 L0,500 Z" fill="url(#hillGrad)"/>
-
-      <g opacity=".38">
-        <ellipse cx="238" cy="420" rx="34" ry="11" fill="${b}"/>
-        <path d="M206,420 Q214,404 228,408" stroke="${b}" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <line x1="216" y1="429" x2="212" y2="441" stroke="${b}" stroke-width="3" stroke-linecap="round"/>
-        <line x1="260" y1="429" x2="264" y2="441" stroke="${b}" stroke-width="3" stroke-linecap="round"/>
+      <defs>
+        <linearGradient id="fazSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--bg-elevated)"/><stop offset="68%" stop-color="var(--bg)"/><stop offset="100%" stop-color="var(--bg-card)"/></linearGradient>
+        <linearGradient id="farHill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--olive)" stop-opacity=".22"/><stop offset="1" stop-color="var(--olive)" stop-opacity=".04"/></linearGradient>
+        <linearGradient id="nearHill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent-dark)" stop-opacity=".17"/><stop offset="1" stop-color="var(--accent-dark)" stop-opacity=".05"/></linearGradient>
+      </defs>
+      <rect width="800" height="500" fill="url(#fazSky)"/>
+      <circle cx="650" cy="96" r="112" fill="url(#sunGlow)" opacity=".82"/>
+      <path d="M84,116 Q110,98 142,118 Q116,110 84,116 Z" fill="${t}" opacity=".10"/>
+      ${bird(130,102,1.4,.22)}${bird(166,120,1,.16)}
+      ${distantHills}
+      <g opacity=".24">
+        <path d="M0,338 Q135,313 245,336 T495,329 T800,331 L800,500 L0,500 Z" fill="var(--accent-dark)"/>
       </g>
-
-      <path d="M58,342 C80,312 112,300 140,312 L140,344" fill="${b}" opacity=".22"/>
-      <line x1="66" y1="430" x2="63" y2="348" stroke="${b}" stroke-width="4" opacity=".55" stroke-linecap="round"/>
-      <line x1="106" y1="430" x2="104" y2="345" stroke="${b}" stroke-width="4" opacity=".55" stroke-linecap="round"/>
-      <line x1="146" y1="430" x2="145" y2="348" stroke="${b}" stroke-width="4" opacity=".55" stroke-linecap="round"/>
-      <path d="M60,368 Q105,360 148,366" stroke="${b}" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"/>
-      <path d="M62,402 Q105,395 150,400" stroke="${b}" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"/>
-
-      ${stalks}
-
-      <g class="sway-el" style="animation:sway 8s ease-in-out infinite; transform-origin:452px 430px;">
-        <ellipse cx="452" cy="432" rx="46" ry="7" fill="${b}" opacity=".16"/>
-        <path d="M452,430 C450,390 447,360 448,320" stroke="${b}" stroke-width="7" fill="none" opacity=".6" stroke-linecap="round"/>
-        <path d="M449,392 C430,378 415,365 390,330" stroke="${b}" stroke-width="4" fill="none" opacity=".55" stroke-linecap="round"/>
-        <path d="M390,330 C384,320 388,308 382,298" stroke="${b}" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"/>
-        <path d="M449,358 C468,340 485,330 512,296" stroke="${b}" stroke-width="4" fill="none" opacity=".55" stroke-linecap="round"/>
-        <path d="M512,296 C518,286 516,274 524,264" stroke="${b}" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"/>
-        <path d="M449,332 C458,310 460,295 468,262" stroke="${b}" stroke-width="3.5" fill="none" opacity=".5" stroke-linecap="round"/>
-        <path d="M451,408 C438,406 428,402 418,400" stroke="${b}" stroke-width="3" fill="none" opacity=".4" stroke-linecap="round"/>
-        <ellipse cx="520" cy="270" rx="6" ry="4.5" fill="${c}" opacity=".55"/>
+      <!-- abandoned fence -->
+      <g opacity=".62" stroke="${b}" fill="none" stroke-linecap="round">
+        <path d="M44,430 L48,335 M102,430 L101,320 M158,430 L161,339 M44,365 Q100,350 160,360 M46,402 Q103,389 160,396" stroke-width="3"/>
       </g>
-      <circle cx="470" cy="300" r="2" fill="${c}" opacity=".55" class="fly-el" style="animation:flyLoop 4s ease-in-out infinite;"/>
-      <circle cx="482" cy="312" r="1.6" fill="${c}" opacity=".45" class="fly-el" style="animation:flyLoop 5.3s ease-in-out infinite .4s;"/>
-
-      ${house(600, 432, 108, 52, .85)}
-
-      <path d="M110,110 Q125,98 140,110 Q125,104 110,110 Z" fill="${c}" opacity=".35" class="fly-el" style="animation:flyLoop 24s linear infinite;"/>
-
-      <path d="M0,430 L800,430" stroke="${b}" stroke-width="1" opacity=".18"/>
-      <path d="M232,430 C240,444 232,452 240,466 C244,472 236,478 242,488" stroke="${b}" stroke-width="1.4" fill="none" opacity=".3"/>
-      <path d="M556,432 C548,446 554,456 546,470" stroke="${b}" stroke-width="1.4" fill="none" opacity=".3"/>
+      <!-- abandoned farmhouse -->
+      <g opacity=".84">
+        <path d="M560,316 L636,266 L712,316 Z" fill="${ad}"/>
+        <rect x="573" y="316" width="126" height="102" fill="${b}" opacity=".74"/>
+        <rect x="622" y="355" width="29" height="63" fill="var(--bg)" opacity=".72"/>
+        <rect x="589" y="338" width="18" height="18" fill="var(--bg)" opacity=".55"/>
+        <rect x="664" y="338" width="18" height="18" fill="var(--bg)" opacity=".55"/>
+        <path d="M568,314 L636,262 L705,314" stroke="${t}" stroke-width="3" fill="none" opacity=".32"/>
+      </g>
+      <!-- dead trough / cattle silhouette -->
+      <g opacity=".24" fill="${t}">
+        <ellipse cx="268" cy="409" rx="34" ry="10"/>
+        <path d="M240,407 q14,-17 32,-3 q11,1 17,9 q-20,7 -49,-1z"/>
+        <path d="M246,415 l-3,19 M279,414 l4,19" stroke="${t}" stroke-width="3" fill="none"/>
+      </g>
+      <!-- juazeiro -->
+      <g class="sway-el" style="animation:sway 8s ease-in-out infinite; transform-origin:430px 424px;" opacity=".56">
+        <path d="M431,425 C430,389 430,351 439,314" stroke="${b}" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <path d="M438,356 C411,341 394,328 376,304 M434,335 C456,321 479,300 496,273 M437,375 C460,359 481,352 504,342 M432,395 C412,390 397,381 386,371" stroke="${b}" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="375" cy="302" rx="11" ry="6" fill="${c}" opacity=".38"/><ellipse cx="495" cy="273" rx="12" ry="6" fill="${c}" opacity=".34"/><ellipse cx="506" cy="341" rx="12" ry="7" fill="${c}" opacity=".33"/><ellipse cx="385" cy="370" rx="11" ry="6" fill="${c}" opacity=".30"/>
+      </g>
+      ${dryGrass(198,430,1.3,.4)}${dryGrass(226,436,1,.32)}${dryGrass(750,437,1.4,.32)}
+      ${groundCracks(0,7)}
+      <rect x="0" y="0" width="800" height="500" fill="url(#sunGlow)" opacity=".04"/>
     </svg>`,
+
     estrada: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
-      <circle cx="140" cy="80" r="80" fill="url(#sunGlow)"/>
-      <path d="M0,270 C150,248 300,262 450,254 C600,246 700,258 800,250 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
-      <rect x="0" y="255" width="800" height="30" fill="url(#hillGrad)" class="haze-el" style="animation:hazePulse 5s ease-in-out infinite;"/>
-      <path d="M340,400 L460,400 L426,266 L374,266 Z" fill="${b}" opacity=".2"/>
-      <line x1="330" y1="400" x2="337" y2="336" stroke="${b}" stroke-width="3" opacity=".3" stroke-linecap="round"/>
-      <line x1="470" y1="400" x2="463" y2="336" stroke="${b}" stroke-width="3" opacity=".3" stroke-linecap="round"/>
-      ${cactus(660, 340, 0.55, 7, 0, .4)}
-      ${cactus(120, 352, 0.4, 6.5, .4, .35)}
-      <circle cx="150" cy="240" r="18" fill="${b}" opacity=".18" class="fly-el" style="animation:flyLoop 10s linear infinite;"/>
+      <defs>
+        <linearGradient id="roadSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--bg-elevated)"/><stop offset="65%" stop-color="var(--bg)"/><stop offset="100%" stop-color="var(--bg-card)"/></linearGradient>
+        <linearGradient id="farHill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--olive)" stop-opacity=".22"/><stop offset="1" stop-color="var(--olive)" stop-opacity=".04"/></linearGradient>
+        <linearGradient id="nearHill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent-dark)" stop-opacity=".12"/><stop offset="1" stop-color="var(--accent-dark)" stop-opacity=".03"/></linearGradient>
+      </defs>
+      <rect width="800" height="400" fill="url(#roadSky)"/>
+      <circle cx="152" cy="78" r="88" fill="url(#sunGlow)" opacity=".72"/>
+      <path d="M0,272 C140,246 280,265 420,252 C570,239 690,260 800,248 L800,400 L0,400 Z" fill="url(#farHill)"/>
+      <path d="M0,306 C150,282 286,301 420,285 C570,268 684,292 800,278 L800,400 L0,400 Z" fill="url(#nearHill)"/>
+      <!-- long road / perspective -->
+      <path d="M336,400 L464,400 L425,268 L375,268 Z" fill="var(--bg-card)" opacity=".72"/>
+      <path d="M350,400 L450,400 L420,277 L380,277 Z" fill="var(--accent-soft)" opacity=".10"/>
+      <path d="M400,272 L400,284 M400,300 L400,315 M400,334 L400,351 M400,371 L400,390" stroke="${b}" stroke-width="2" opacity=".34" stroke-linecap="round" stroke-dasharray="2 7"/>
+      ${cactus(105,360,.47,7,.3,.36)}
+      ${cactus(680,350,.64,7.5,.8,.44)}
+      ${cactus(738,368,.34,6.6,.1,.26)}
+      ${thornBush(245,382,.8,.22)}${thornBush(556,382,1,.22)}
+      <!-- heat haze -->
+      <g opacity=".12" class="haze-el" style="animation:hazePulse 5s ease-in-out infinite">
+        <path d="M260,238 Q310,223 360,238 T460,238 T560,238" stroke="var(--accent)" stroke-width="5" fill="none"/>
+        <path d="M300,255 Q350,240 400,255 T500,255" stroke="var(--olive)" stroke-width="3" fill="none"/>
+      </g>
+      ${bird(610,118,1.1,.18)}${bird(648,104,.85,.14)}
+      ${groundCracks(30,6)}
     </svg>`,
+
     caatinga: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
-      <path d="M0,280 C160,258 320,272 480,262 C600,254 700,266 800,258 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
-      ${cactus(110, 385, 0.75, 6, 0, .55)}
-      ${cactus(225, 396, 0.5, 7, .6, .4)}
-      ${cactus(420, 390, 0.9, 6.5, .3, .55)}
-      ${cactus(600, 382, 0.65, 7.5, .5, .48)}
-      ${cactus(710, 397, 0.5, 6.8, .8, .4)}
-      ${ballCactus(320, 405, 14)}
-      ${ballCactus(510, 410, 10)}
-      <path d="M350,400 L350,378" stroke="${b}" stroke-width="3" opacity=".25" stroke-linecap="round"/>
+      <defs>
+        <linearGradient id="caaSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--bg-elevated)"/><stop offset="72%" stop-color="var(--bg)"/><stop offset="100%" stop-color="var(--bg-card)"/></linearGradient>
+      </defs>
+      <rect width="800" height="400" fill="url(#caaSky)"/>
+      <circle cx="650" cy="80" r="90" fill="url(#sunGlow)" opacity=".5"/>
+      <path d="M0,280 C150,256 290,274 435,262 C590,250 694,267 800,254 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
+      <!-- thorn corridor -->
+      ${cactus(78,395,.78,6.2,0,.52)}
+      ${cactus(188,392,.48,7.2,.6,.34)}
+      ${cactus(694,392,.82,7,.2,.5)}
+      ${cactus(742,398,.4,6.6,.8,.3)}
+      ${thornBush(145,392,1.2,.42)}${thornBush(270,398,1.15,.32)}${thornBush(576,397,1.2,.34)}${thornBush(635,390,.9,.30)}
+      ${dryGrass(320,400,1.1,.30)}${dryGrass(356,402,.9,.22)}${dryGrass(466,400,1.25,.30)}${dryGrass(514,400,.9,.22)}
+      <!-- narrow path -->
+      <path d="M355,400 Q375,348 395,310 Q410,289 430,272 Q446,294 461,322 Q475,355 492,400 Z" fill="var(--bg-card)" opacity=".38"/>
+      <path d="M396,399 Q414,355 423,318 Q431,294 438,278" stroke="var(--accent-dark)" stroke-width="2" opacity=".28" fill="none"/>
+      <!-- solitary bird / tension -->
+      ${bird(520,125,1.5,.22)}
+      <path d="M0,360 Q100,340 200,357 T400,352 T600,356 T800,349" stroke="${b}" stroke-width="2" opacity=".22" fill="none"/>
+      ${groundCracks(12,7)}
     </svg>`,
+
     vila: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
       <defs>
-        <linearGradient id="vilaSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent-soft)" stop-opacity=".12"/><stop offset="1" stop-color="var(--bg)" stop-opacity="0"/></linearGradient>
+        <linearGradient id="vilaSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--bg-elevated)"/><stop offset="66%" stop-color="var(--bg)"/><stop offset="100%" stop-color="var(--bg-card)"/></linearGradient>
+        <linearGradient id="vilaRoad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--bg-card)" stop-opacity=".1"/><stop offset="100%" stop-color="var(--accent-dark)" stop-opacity=".18"/></linearGradient>
       </defs>
       <rect width="800" height="400" fill="url(#vilaSky)"/>
-      <path d="M0,285 C130,266 255,282 385,270 C520,258 665,278 800,260 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
-      <path d="M355,400 C390,355 405,325 430,295 C455,325 475,360 505,400 Z" fill="var(--bg-card)" opacity=".75"/>
-      ${house(32, 370, 112, 46, .72)}
-      ${house(175, 360, 86, 40, .58)}
-      ${house(525, 370, 104, 48, .65)}
-      ${house(654, 362, 92, 42, .54)}
-      <g opacity=".62">
-        <rect x="300" y="250" width="108" height="120" rx="2" fill="var(--border)"/>
-        <path d="M288,252 L354,205 L420,252 Z" fill="var(--accent-dark)" opacity=".8"/>
-        <rect x="320" y="292" width="26" height="42" fill="var(--bg)"/>
-        <rect x="360" y="275" width="30" height="25" fill="var(--bg)" opacity=".75"/>
-        <path d="M306,315 L402,315" stroke="var(--accent-dark)" stroke-width="4" opacity=".55"/>
+      <circle cx="145" cy="82" r="78" fill="url(#sunGlow)" opacity=".44"/>
+      <path d="M0,284 C135,264 270,283 398,269 C536,254 676,278 800,260 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
+      <!-- layered village -->
+      <g opacity=".48">
+        <path d="M48,305 L88,274 L128,305 Z" fill="${ad}"/><rect x="56" y="305" width="64" height="50" fill="${b}"/>
+        <path d="M174,292 L208,265 L242,292 Z" fill="${ad}"/><rect x="181" y="292" width="54" height="48" fill="${b}"/>
+        <path d="M564,303 L603,270 L642,303 Z" fill="${ad}"/><rect x="572" y="303" width="63" height="51" fill="${b}"/>
+        <path d="M664,296 L696,268 L728,296 Z" fill="${ad}"/><rect x="670" y="296" width="52" height="47" fill="${b}"/>
       </g>
-      <g opacity=".5">
-        <rect x="110" y="316" width="34" height="4" fill="var(--border)"/><rect x="116" y="298" width="4" height="20" fill="var(--border)"/><rect x="136" y="300" width="4" height="18" fill="var(--border)"/>
-        <path d="M88,370 Q120,340 150,370" fill="none" stroke="var(--olive)" stroke-width="4"/>
+      <!-- central square / chapel -->
+      <g opacity=".74">
+        <rect x="314" y="218" width="122" height="134" fill="var(--border)"/>
+        <path d="M300,220 L375,163 L450,220 Z" fill="${ad}"/>
+        <rect x="362" y="270" width="30" height="82" fill="var(--bg)" opacity=".78"/>
+        <rect x="333" y="247" width="20" height="22" fill="var(--bg)" opacity=".54"/>
+        <rect x="401" y="247" width="20" height="22" fill="var(--bg)" opacity=".54"/>
+        <circle cx="375" cy="200" r="7" fill="${as}" opacity=".75"/>
       </g>
-      <g opacity=".45">
-        <circle cx="245" cy="330" r="6" fill="var(--text)"/><path d="M245,336 L245,360 M245,343 L234,351 M245,343 L256,350 M245,360 L237,372 M245,360 L253,372" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="570" cy="325" r="6" fill="var(--text)"/><path d="M570,331 L570,355 M570,338 L560,346 M570,338 L581,345 M570,355 L563,367 M570,355 L578,367" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/>
-      </g>
-      <path d="M0,374 C180,360 280,382 430,367 C570,352 670,380 800,365" stroke="var(--border)" stroke-width="3" fill="none" opacity=".5"/>
+      <!-- street -->
+      <path d="M0,400 L800,400 L520,335 L280,335 Z" fill="url(#vilaRoad)"/>
+      <path d="M0,365 Q196,347 400,361 T800,355" stroke="${b}" stroke-width="2" opacity=".45" fill="none"/>
+      <!-- people and posts -->
+      ${person(258,356,.95,.44)}${person(538,355,.95,.38)}${person(463,348,.7,.26)}
+      <g opacity=".40" stroke="${t}" stroke-linecap="round"><line x1="120" y1="347" x2="120" y2="272" stroke-width="4"/><line x1="120" y1="279" x2="92" y2="293" stroke-width="2.5"/><line x1="120" y1="279" x2="148" y2="293" stroke-width="2.5"/></g>
+      <g opacity=".32" class="flicker-el" style="animation:flicker 2.8s ease-in-out infinite"><rect x="706" y="300" width="11" height="10" fill="${as}"/></g>
+      ${dryGrass(54,394,.9,.2)}${dryGrass(752,396,1,.24)}
+      ${bird(590,108,1.1,.16)}
     </svg>`,
+
     rio: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
-      <path d="M0,288 C160,270 320,280 480,272 C600,266 700,276 800,268 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
-      ${reed(55, 320, 42, 0)}
-      ${reed(78, 326, 34, .3)}
-      ${reed(722, 318, 40, .15)}
-      ${reed(744, 324, 32, .5)}
-      <path d="M0,330 Q60,318 120,330 T240,330 T360,330 T480,330 T600,330 T720,330 T800,328 V400 H0 Z" fill="url(#waterGrad)" class="wave-el" style="animation:waveFlow 6s linear infinite;"/>
-      <path d="M0,358 Q60,348 120,358 T240,358 T360,358 T480,358 T600,358 T720,358 T800,356 V400 H0 Z" fill="url(#waterGrad)" opacity=".7" class="wave-el" style="animation:waveFlow 8s linear infinite reverse;"/>
-      <ellipse cx="220" cy="345" rx="16" ry="7" fill="${b}" opacity=".4"/>
-      <ellipse cx="560" cy="352" rx="20" ry="8" fill="${b}" opacity=".35"/>
-      <circle cx="380" cy="340" r="10" fill="none" stroke="${b}" stroke-width="1.5" opacity=".3" class="ripple-el" style="animation:ripple 3s ease-out infinite; transform-origin:380px 340px;"/>
-      <circle cx="480" cy="360" r="8" fill="none" stroke="${b}" stroke-width="1.5" opacity=".25" class="ripple-el" style="animation:ripple 3.6s ease-out infinite 1s; transform-origin:480px 360px;"/>
+      <defs>
+        <linearGradient id="rioSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--bg-elevated)"/><stop offset="58%" stop-color="var(--bg)"/><stop offset="100%" stop-color="var(--bg-card)"/></linearGradient>
+        <linearGradient id="rioWater" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--border)" stop-opacity=".46"/><stop offset="100%" stop-color="var(--accent-dark)" stop-opacity=".28"/></linearGradient>
+      </defs>
+      <rect width="800" height="400" fill="url(#rioSky)"/>
+      <circle cx="612" cy="91" r="95" fill="url(#sunGlow)" opacity=".48"/>
+      <path d="M0,285 C130,266 290,280 434,270 C584,258 704,277 800,265 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
+      <!-- stream -->
+      <path d="M0,325 Q110,307 220,326 T440,324 T660,329 T800,322 V400 H0 Z" fill="url(#rioWater)"/>
+      <path d="M0,352 Q110,338 210,352 T420,351 T630,356 T800,349" stroke="${b}" stroke-width="2.2" opacity=".45" fill="none" class="wave-el" style="animation:waveFlow 7s linear infinite;"/>
+      <path d="M0,371 Q100,360 198,373 T395,370 T594,376 T800,369" stroke="${b}" stroke-width="1.5" opacity=".28" fill="none" class="wave-el" style="animation:waveFlow 9s linear infinite reverse;"/>
+      <!-- stones / dry bank -->
+      <g opacity=".44" fill="${b}"><ellipse cx="202" cy="331" rx="20" ry="8"/><ellipse cx="236" cy="341" rx="13" ry="6"/><ellipse cx="566" cy="334" rx="24" ry="9"/><ellipse cx="610" cy="340" rx="12" ry="6"/></g>
+      ${reed(55,330,48,0)}${reed(82,333,38,.3)}${reed(706,328,46,.15)}${reed(741,334,36,.55)}
+      <!-- leaning tree -->
+      <g class="sway-el" style="animation:sway 9s ease-in-out infinite; transform-origin:665px 334px;" opacity=".38">
+        <path d="M668,335 C655,299 648,268 652,233" stroke="${b}" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M651,260 C632,246 617,233 606,216 M651,283 C675,266 694,252 708,233" stroke="${b}" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="605" cy="215" rx="15" ry="7" fill="${c}" opacity=".65"/><ellipse cx="708" cy="232" rx="13" ry="6" fill="${c}" opacity=".58"/>
+      </g>
+      <circle cx="360" cy="334" r="8" fill="none" stroke="${b}" stroke-width="1.5" opacity=".34" class="ripple-el" style="animation:ripple 3s ease-out infinite; transform-origin:360px 334px;"/>
+      <circle cx="475" cy="352" r="7" fill="none" stroke="${b}" stroke-width="1.5" opacity=".24" class="ripple-el" style="animation:ripple 3.6s ease-out infinite 1s; transform-origin:475px 352px;"/>
     </svg>`,
+
     cidade: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
-      <circle cx="630" cy="95" r="95" fill="url(#sunGlow)" opacity=".65"/>
-      <path d="M0,300 C150,282 310,292 455,278 C600,264 700,280 800,270 L800,400 L0,400 Z" fill="url(#hillGrad)" opacity=".65"/>
-      <path d="M0,318 L0,270 L82,270 L82,245 L138,245 L138,292 L190,292 L190,230 L255,230 L255,280 L318,280 L318,220 L382,220 L382,285 L445,285 L445,245 L510,245 L510,275 L570,275 L570,210 L635,210 L635,270 L700,270 L700,235 L770,235 L770,285 L800,285 L800,400 L0,400 Z" fill="var(--border)" opacity=".42"/>
-      <g opacity=".7">
-        <rect x="72" y="286" width="8" height="8" fill="var(--accent-soft)" class="flicker-el" style="animation:flicker 3s ease-in-out infinite"/>
-        <rect x="205" y="252" width="9" height="10" fill="var(--accent-soft)" class="flicker-el" style="animation:flicker 2.4s ease-in-out infinite .4s"/>
-        <rect x="337" y="242" width="9" height="10" fill="var(--accent-soft)" class="flicker-el" style="animation:flicker 3.2s ease-in-out infinite 1s"/>
-        <rect x="585" y="232" width="9" height="10" fill="var(--accent-soft)" class="flicker-el" style="animation:flicker 2.7s ease-in-out infinite .2s"/>
-        <rect x="715" y="255" width="9" height="10" fill="var(--accent-soft)" class="flicker-el" style="animation:flicker 3.5s ease-in-out infinite .7s"/>
+      <defs>
+        <linearGradient id="citySky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--bg-elevated)"/><stop offset="62%" stop-color="var(--bg)"/><stop offset="100" stop-color="var(--bg-card)"/></linearGradient>
+      </defs>
+      <rect width="800" height="400" fill="url(#citySky)"/>
+      <circle cx="642" cy="86" r="98" fill="url(#sunGlow)" opacity=".65"/>
+      <path d="M0,292 C150,274 292,292 430,278 C590,262 692,282 800,270 L800,400 L0,400 Z" fill="url(#hillGrad)" opacity=".7"/>
+      <!-- varied skyline -->
+      <g opacity=".56">
+        <rect x="40" y="267" width="76" height="95" fill="var(--border)"/><path d="M40,267 L78,238 L116,267 Z" fill="${ad}"/>
+        <rect x="128" y="239" width="62" height="123" fill="var(--border)"/><rect x="145" y="258" width="12" height="16" fill="var(--accent-soft)" opacity=".7"/>
+        <rect x="205" y="282" width="86" height="80" fill="var(--border)"/><path d="M205,282 L248,250 L291,282 Z" fill="${ad}"/>
+        <rect x="510" y="250" width="88" height="112" fill="var(--border)"/><path d="M510,250 L554,217 L598,250 Z" fill="${ad}"/>
+        <rect x="615" y="275" width="70" height="87" fill="var(--border)"/><rect x="704" y="230" width="56" height="132" fill="var(--border)"/>
       </g>
-      <g opacity=".58">
-        <path d="M380,310 L380,220 L430,185 L480,220 L480,310 Z" fill="var(--bg-card)"/>
-        <path d="M368,222 L430,170 L492,222 Z" fill="var(--accent-dark)"/>
-        <rect x="418" y="244" width="24" height="66" fill="var(--border)"/>
-        <circle cx="430" cy="207" r="8" fill="var(--accent-soft)" opacity=".8"/>
+      <!-- church / center landmark -->
+      <g opacity=".78">
+        <path d="M332,360 L332,236 L402,184 L472,236 L472,360 Z" fill="var(--bg-card)"/>
+        <path d="M318,238 L402,171 L486,238 Z" fill="${ad}"/>
+        <rect x="388" y="270" width="29" height="90" fill="var(--border)"/>
+        <circle cx="402" cy="215" r="8" fill="${as}" opacity=".8"/>
+        <path d="M402,164 L402,136 M391,150 L413,150" stroke="${t}" stroke-width="4" opacity=".55" stroke-linecap="round"/>
+        <rect x="350" y="251" width="19" height="22" fill="var(--bg)" opacity=".62"/><rect x="435" y="251" width="19" height="22" fill="var(--bg)" opacity=".62"/>
       </g>
-      <g opacity=".42">
-        <line x1="120" y1="330" x2="120" y2="255" stroke="var(--text)" stroke-width="4"/><line x1="120" y1="260" x2="92" y2="276" stroke="var(--text)" stroke-width="3"/><line x1="120" y1="260" x2="148" y2="276" stroke="var(--text)" stroke-width="3"/>
-        <line x1="680" y1="335" x2="680" y2="250" stroke="var(--text)" stroke-width="4"/><circle cx="680" cy="245" r="14" fill="url(#fireGlow)"/>
+      <!-- street -->
+      <path d="M0,400 L800,400 L515,346 L278,346 Z" fill="var(--accent-dark)" opacity=".12"/>
+      <path d="M0,372 Q188,354 402,369 T800,363" stroke="${b}" stroke-width="2" opacity=".62" fill="none"/>
+      <!-- lamps / wires -->
+      <g opacity=".40" stroke="${t}" fill="none" stroke-linecap="round"><line x1="96" y1="356" x2="96" y2="246" stroke-width="4"/><path d="M96,248 q14,-14 28,0" stroke-width="3"/><line x1="680" y1="358" x2="680" y2="248" stroke-width="4"/><path d="M680,250 q14,-14 27,0" stroke-width="3"/></g>
+      <g opacity=".62">
+        <rect x="214" y="313" width="11" height="10" fill="${as}" class="flicker-el" style="animation:flicker 2.8s ease-in-out infinite"/>
+        <rect x="545" y="282" width="11" height="10" fill="${as}" class="flicker-el" style="animation:flicker 3.3s ease-in-out infinite .6s"/>
+        <rect x="718" y="266" width="10" height="11" fill="${as}" class="flicker-el" style="animation:flicker 2.4s ease-in-out infinite .2s"/>
       </g>
-      <path d="M0,370 Q190,350 400,370 T800,365" stroke="var(--accent-dark)" stroke-width="16" opacity=".18" fill="none"/>
-      <path d="M0,368 Q200,348 400,368 T800,363" stroke="var(--border)" stroke-width="2" opacity=".6" fill="none"/>
+      ${person(270,360,1,.36)}${person(585,358,.9,.30)}
+      ${bird(158,116,1.1,.15)}${bird(188,103,.75,.11)}
     </svg>`,
+
     abrigo: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
-      <path d="M0,300 C150,282 300,292 450,278 C610,264 700,282 800,270 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
-      <path d="M235,370 L270,245 L535,245 L570,370 Z" fill="var(--border)" opacity=".28"/>
-      <path d="M205,250 L402,170 L600,250 Z" fill="var(--accent-dark)" opacity=".68"/>
-      <path d="M225,247 L402,184 L580,247" stroke="var(--text)" stroke-width="9" fill="none" opacity=".38"/>
-      <g stroke="var(--text)" stroke-width="7" opacity=".42"><line x1="260" y1="245" x2="250" y2="370"/><line x1="540" y1="245" x2="552" y2="370"/><line x1="318" y1="230" x2="318" y2="370"/><line x1="482" y1="230" x2="482" y2="370"/></g>
-      <path d="M345,370 L345,292 Q402,260 459,292 L459,370 Z" fill="var(--bg)" opacity=".8"/>
-      <path d="M355,370 L355,300 Q402,275 449,300 L449,370" stroke="var(--accent-dark)" stroke-width="4" fill="none" opacity=".65"/>
-      <g opacity=".58"><path d="M286,350 Q302,326 318,350 L318,370 L286,370 Z" fill="var(--accent-soft)"/><path d="M490,354 Q505,330 522,354 L522,370 L490,370 Z" fill="var(--accent-soft)"/></g>
-      <g class="flicker-el" style="animation:flicker 1.5s ease-in-out infinite"><circle cx="402" cy="340" r="18" fill="url(#fireGlow)"/><path d="M394,354 Q402,330 410,354 Q402,347 394,354" fill="var(--accent-soft)" opacity=".8"/></g>
-      <g opacity=".45"><circle cx="170" cy="333" r="7" fill="var(--text)"/><path d="M170,340 L170,364 M170,346 L158,353 M170,346 L181,352 M170,364 L162,376 M170,364 L178,376" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/><circle cx="650" cy="329" r="7" fill="var(--text)"/><path d="M650,336 L650,360 M650,342 L638,349 M650,342 L661,349 M650,360 L642,372 M650,360 L658,372" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/></g>
-      <path d="M0,374 Q190,358 400,374 T800,370" stroke="var(--border)" stroke-width="2" opacity=".55" fill="none"/>
+      <defs>
+        <linearGradient id="shelterSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--bg-elevated)"/><stop offset="70%" stop-color="var(--bg)"/><stop offset="100" stop-color="var(--bg-card)"/></linearGradient>
+      </defs>
+      <rect width="800" height="400" fill="url(#shelterSky)"/>
+      <circle cx="650" cy="90" r="85" fill="url(#sunGlow)" opacity=".40"/>
+      <path d="M0,290 C150,270 300,288 450,276 C600,264 700,282 800,268 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
+      <!-- distant camp silhouettes -->
+      <path d="M60,330 L118,282 L176,330 Z" fill="var(--border)" opacity=".24"/>
+      <path d="M626,332 L676,294 L726,332 Z" fill="var(--border)" opacity=".22"/>
+      <!-- rustic rancho -->
+      <g opacity=".78">
+        <path d="M214,253 L402,168 L590,253" fill="none" stroke="${t}" stroke-width="8" opacity=".4"/>
+        <path d="M205,253 L402,167 L600,253 Z" fill="${ad}" opacity=".88"/>
+        <path d="M227,248 L402,184 L578,248 L548,366 L250,366 Z" fill="var(--border)" opacity=".54"/>
+        <g stroke="${t}" stroke-width="7" opacity=".42"><line x1="259" y1="244" x2="250" y2="368"/><line x1="543" y1="244" x2="553" y2="368"/><line x1="320" y1="218" x2="320" y2="366"/><line x1="482" y1="218" x2="482" y2="366"/></g>
+        <path d="M345,366 L345,297 Q402,262 459,297 L459,366 Z" fill="var(--bg)" opacity=".72"/>
+        <path d="M355,366 L355,304 Q402,278 449,304 L449,366" stroke="${ad}" stroke-width="4" fill="none" opacity=".65"/>
+      </g>
+      <!-- fire and people -->
+      <g class="flicker-el" style="animation:flicker 1.5s ease-in-out infinite"><circle cx="402" cy="341" r="25" fill="url(#fireGlow)"/><path d="M390,355 Q400,322 410,355 Q402,345 390,355" fill="${as}" opacity=".88"/></g>
+      ${person(290,360,1,.36)}${person(518,360,1,.36)}${person(615,364,.82,.25)}
+      ${dryGrass(160,397,1,.25)}${dryGrass(670,396,1.1,.25)}
+      <!-- smoke -->
+      <g opacity=".10"><circle cx="403" cy="300" r="11" fill="var(--text)" class="haze-el" style="animation:hazePulse 4s ease-in-out infinite"/><circle cx="410" cy="278" r="8" fill="var(--text)"/><circle cx="404" cy="260" r="6" fill="var(--text)"/></g>
+      <path d="M0,377 Q198,360 402,375 T800,369" stroke="${b}" stroke-width="2" opacity=".56" fill="none"/>
     </svg>`,
   };
   return scenes[id] ? `<div class="scene-bg">${scenes[id]}</div>` : '';
@@ -933,7 +1057,7 @@ function screenIntro2() {
       <div style="background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:1.2rem 1.4rem;">
         ${row('water', 'Água', r.water)}
         ${row('food', 'Comida', r.food)}
-        ${row('money', 'Dinheiro', r.money, false)}
+        ${row('money', 'Dinheiro', 'R$ ' + r.money, false)}
         ${row('baleia', 'Condição de Baleia', r.baleia)}
         ${row('family', 'Condição da família', r.family)}
       </div>
@@ -993,7 +1117,12 @@ function screenMap() {
       <div class="map-wrap">
         <p style="text-align:center; letter-spacing:.1em; font-size:.7rem; color:var(--text-muted); margin-bottom:.4rem;">MAPA DA JORNADA</p>
         <h2 class="display" style="text-align:center; font-size:1.6rem; margin:0 0 .45rem;">${state.finalChoiceUnlocked ? 'Para onde seguir?' : 'Escolha o próximo passo'}</h2>
-        <p style="text-align:center; max-width:620px; margin:0 auto 1.4rem; color:var(--text-muted); font-size:.86rem; line-height:1.5;">Explore os ambientes da jornada de Fabiano e sua família.</p>
+        <p style="text-align:center; max-width:620px; margin:0 auto 1.15rem; color:var(--text-muted); font-size:.86rem; line-height:1.5;">Explore os ambientes da jornada de Fabiano e sua família. O próximo ponto disponível fica destacado.</p>
+        <div class="map-legend" aria-label="Legenda do mapa">
+          <span><i class="legend-dot available"></i> Próximo</span>
+          <span><i class="legend-dot visited"></i> Percorrido</span>
+          <span><i class="legend-dot locked"></i> Bloqueado</span>
+        </div>
         <div class="scroll-x">${mapSvg()}</div>
       </div>
     </div>
@@ -1053,13 +1182,18 @@ function screenScene() {
 /* ---------- RESULTADO DE ESCOLHA ---------- */
 function screenChoiceResult() {
   const r = state._lastResult;
+  const delta = state._lastDelta || {};
+  const labels = { water:'Água', food:'Comida', money:'Dinheiro', baleia:'Baleia', family:'Família' };
+  const changes = Object.entries(delta).filter(([,v]) => v !== 0).map(([k,v]) => `<span class="result-change ${v > 0 ? 'up' : 'down'}">${k === 'money' ? 'R$ ' : ''}${v > 0 && k !== 'money' ? '+' : ''}${v}${k === 'money' ? '' : '%'} ${labels[k]}</span>`).join('');
   return `
   <div class="scene">
     ${bgFor(state.current)}
     ${resourceBar()}
     <div style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center; padding:2.5rem 1.25rem;">
-      <div style="max-width:520px;">
+      <div style="max-width:560px; width:100%;">
+        <p style="letter-spacing:.12em; font-size:.7rem; color:var(--accent); font-weight:700; margin:0 0 .8rem;">CONSEQUÊNCIA</p>
         <p class="prose-cap" style="margin:0 auto; font-size:1.08rem; line-height:1.75; font-style:italic; color:var(--text);">${r}</p>
+        ${changes ? `<div class="result-changes">${changes}</div>` : ''}
         <button class="btn" onclick="Actions.afterResult()" style="margin-top:2.2rem;">Continuar</button>
       </div>
     </div>
@@ -1141,7 +1275,10 @@ function screenEnding() {
 
       <p class="prose-cap" style="margin:2rem auto 0; font-style:italic; color:var(--text-muted); font-size:.94rem;">Suas escolhas mostram uma pequena parte das condições enfrentadas pelos personagens de Vidas Secas.</p>
 
-      <button class="btn" onclick="Actions.restart()" style="margin-top:1.8rem;">Refazer Jornada</button>
+      <div style="display:flex; justify-content:center; gap:.7rem; flex-wrap:wrap; margin-top:1.8rem;">
+        <button class="btn" onclick="Actions.restart()">Refazer Jornada</button>
+        <button class="btn btn-ghost" onclick="Actions.goHome()">Voltar ao início</button>
+      </div>
     </div>
   </div>`;
 }
@@ -1174,7 +1311,8 @@ const Actions = {
   backToAbout() { state.chapterOpen = null; state.screen = 'about'; render(); },
   begin() { state.screen = 'intro1'; render(); },
   showAbout() { state._returnTo = state.screen; state.screen = 'about'; render(); },
-  backFromAbout() { state.chapterOpen = null; state.screen = state._returnTo || 'entry'; render(); },
+  backFromAbout() { state.chapterOpen = null; state._returnTo = 'entry'; state.screen = 'entry'; render(); },
+  goHome() { state = initialState(); render(); },
   toIntro2() { state.screen = 'intro2'; render(); },
   toMap() { state.screen = 'map'; render(); },
   backToMap() { state.screen = 'map'; render(); },
@@ -1231,6 +1369,7 @@ const Actions = {
     applyDelta(delta);
     state.decisions.push(`${loc.label}: ${opt.label.toLowerCase()}.`);
     state._lastResult = resultText;
+    state._lastDelta = { ...delta };
 
     if (checkTragedy()) { render(); return; }
 
@@ -1260,6 +1399,7 @@ const Actions = {
   },
 };
 
+
 function completeLocation() {
   const id = state.current;
   const loc = LOCATIONS[id];
@@ -1268,7 +1408,7 @@ function completeLocation() {
   state.day += 1;
 
   // a travessia cobra seu preço mesmo entre um evento e outro
-  applyDelta({ water: -3, food: -2 });
+  applyDelta({ water: -4, food: -3 });
   if (checkTragedy()) { render(); return; }
 
   const idx = state.order.indexOf(id);
