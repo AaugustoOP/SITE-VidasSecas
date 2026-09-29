@@ -596,18 +596,6 @@ const LOCATIONS = {
   },
 };
 
-const CHAPTER = { fazenda: [1,2,4,5,6,7,9,10,11,12,13], estrada: [1,13], caatinga: [1,12,13], vila: [3,8,10,11], rio: [1,7,9], cidade: [3,8,10,11], abrigo: [13] };
-
-function chapterLabelFor(id) {
-  const nums = CHAPTER[id] || [];
-  return nums.length ? nums.map(n => `Cap. ${n}`).join(' · ') : 'Adaptação';
-}
-
-function chapterTitleFor(id) {
-  const nums = CHAPTER[id] || [];
-  return nums.length === 1 ? BOOK_CHAPTERS[nums[0]-1].title : 'Passagem pela obra';
-}
-
 /* ============================================================
    RENDERIZAÇÃO
    ============================================================ */
@@ -1019,9 +1007,7 @@ function screenLocationDetail() {
   <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:2rem 1.25rem;">
     ${bgFor(state.current)}
     <div style="max-width:480px;">
-      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.6rem;">${chapterLabelFor(state.current)}</p>
-      <h2 class="display" style="font-size:2.2rem; margin:0 0 .45rem; text-transform:uppercase; letter-spacing:.02em;">${loc.label}</h2>
-      <p style="margin:0 0 1rem; color:var(--accent-dark); font-family:'Fraunces',serif; font-style:italic;">${chapterTitleFor(state.current)}</p>
+      <h2 class="display" style="font-size:2.2rem; margin:0 0 1rem; text-transform:uppercase; letter-spacing:.02em;">${loc.label}</h2>
       <p class="prose-cap" style="margin:0 auto 2rem; color:var(--text-muted); line-height:1.6; font-size:1.02rem;">${loc.teaser}</p>
       <div style="display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap;">
         <button class="btn-ghost btn" onclick="Actions.backToMap()">Voltar ao mapa</button>
@@ -1040,13 +1026,13 @@ function screenScene() {
   let inner = '';
   if (beat.type === 'narration') {
     inner = `
-      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${chapterLabelFor(state.current)} · ${loc.label.toUpperCase()}</p>
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${loc.label.toUpperCase()}</p>
       <h2 class="display" style="font-size:1.7rem; margin:0 0 1.1rem;">${beat.title}</h2>
       <p class="prose-cap" style="color:var(--text); line-height:1.75; font-size:1.05rem;">${beatText}</p>
       <button class="btn" onclick="Actions.advanceBeat()" style="margin-top:2.2rem;">Continuar</button>`;
   } else {
     inner = `
-      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${chapterLabelFor(state.current)} · ${loc.label.toUpperCase()}</p>
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${loc.label.toUpperCase()}</p>
       <h2 class="display" style="font-size:1.7rem; margin:0 0 .9rem;">${beat.title}</h2>
       <p class="prose-cap" style="color:var(--text); line-height:1.7; font-size:1.02rem; margin-bottom:1.8rem;">${beatText}</p>
       <div style="display:flex; flex-direction:column; gap:.7rem; max-width:480px; margin:0 auto;">
@@ -1087,7 +1073,7 @@ function screenArrival() {
   <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:2rem 1.25rem;">
     ${bgFor(state.current)}
     <div style="max-width:520px;">
-      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${chapterLabelFor(state.current)} · ${loc.label.toUpperCase()}</p>
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${loc.label.toUpperCase()}</p>
       <p class="prose-cap display" style="margin:0 auto; font-size:1.3rem; line-height:1.7; font-style:italic;">${loc.arrival}</p>
       <button class="btn" onclick="Actions.finish()" style="margin-top:2.4rem;">Continuar</button>
     </div>
