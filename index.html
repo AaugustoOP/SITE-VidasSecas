@@ -106,7 +106,29 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow: hidden;
     animation: sceneIn 900ms cubic-bezier(.16,.9,.35,1) both;
+  }
+  .scene > *:not(.scene-bg) { position: relative; z-index: 1; }
+  .scene-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .scene-bg svg { position: absolute; bottom: 0; left: 0; width: 100%; height: 72%; opacity: .6; }
+  @media (min-width: 640px) {
+    .scene-bg svg { height: 58%; opacity: .55; }
+  }
+  @media (min-width: 1024px) {
+    .scene-bg svg { height: 48%; opacity: .5; }
+  }
+  @keyframes sway { 0%,100% { transform: rotate(-1.4deg); } 50% { transform: rotate(1.4deg); } }
+  @keyframes flicker { 0%,100% { opacity: .35; transform: scale(1); } 50% { opacity: .6; transform: scale(1.05); } }
+  @keyframes waveFlow { 0% { transform: translateX(0); } 100% { transform: translateX(-60px); } }
+  @keyframes shimmerMove { 0%,100% { transform: translateX(0) scaleY(1); opacity: .18; } 50% { transform: translateX(18px) scaleY(1.25); opacity: .32; } }
+  @keyframes flyLoop { 0% { transform: translate(0,0); } 25% { transform: translate(6px,-8px); } 50% { transform: translate(-4px,-3px); } 75% { transform: translate(5px,4px); } 100% { transform: translate(0,0); } }
+  @keyframes flagWave { 0%,100% { transform: skewX(0deg); } 50% { transform: skewX(6deg); } }
+  @keyframes hazePulse { 0%,100% { opacity: .12; } 50% { opacity: .24; } }
+  @keyframes ripple { 0% { transform: scale(.3); opacity: .4; } 100% { transform: scale(1.9); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .sway-el, .flicker-el, .wave-el, .shimmer-el, .fly-el, .flag-el, .haze-el, .ripple-el { animation: none !important; }
   }
   @media (prefers-reduced-motion: reduce) {
     .scene { animation: none; }
@@ -194,6 +216,39 @@
   .res-fill { height: 100%; background: var(--accent); transition: width 500ms ease; }
   .res-num { font-size: .72rem; color: var(--text-muted); font-variant-numeric: tabular-nums; min-width: 26px; }
 
+  /* ---------- capítulos ---------- */
+  .chapters-panel { margin: 2rem auto 0; max-width: 760px; padding-top: 1.2rem; }
+  .chapters-heading { margin-bottom:1rem; color:var(--text-muted); }
+  .chapters-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.75rem; text-align:left; }
+  .chapter-button:last-child { grid-column:1 / -1; justify-self:center; width:calc(50% - .375rem); }
+  .chapter-button { width:100%; border:1px solid var(--border); background:var(--bg-card); color:var(--text); border-radius:10px; padding:1rem 1.05rem; cursor:pointer; text-align:left; transition:transform .18s ease,border-color .18s ease,background .18s ease; font-family:'Archivo',sans-serif; }
+  .chapter-button:hover { transform:translateY(-2px); border-color:var(--accent); background:var(--bg-elevated); }
+  .chapter-number { display:block; font-size:.68rem; letter-spacing:.11em; color:var(--accent); font-weight:700; margin-bottom:.32rem; }
+  .chapter-title { display:block; font-family:'Fraunces',serif; font-size:1.02rem; font-weight:600; line-height:1.2; }
+  .chapter-hint { display:block; margin-top:.45rem; font-size:.68rem; color:var(--text-muted); }
+  .chapter-reader { max-width:820px; width:100%; margin:0 auto; text-align:left; }
+  .chapter-reader-head { border-bottom:1px solid var(--border); padding-bottom:1.4rem; margin-bottom:1.5rem; }
+  .chapter-reader-kicker { font-size:.7rem; letter-spacing:.13em; color:var(--accent); font-weight:700; margin:0 0 .45rem; }
+  .chapter-reader-title { font-family:'Fraunces',serif; font-size:clamp(2rem,6vw,3rem); line-height:1.05; margin:0; color:var(--text); }
+  .chapter-reader-text { color:var(--text); font-size:1rem; line-height:1.85; }
+  .chapter-reader-text p { margin:0 0 1.15rem; }
+  .chapter-reader-source { margin-top:2rem; padding-top:.2rem; color:var(--text-muted); font-size:.78rem; line-height:1.55; }
+  .chapter-reader-source a { color:var(--accent-dark); }
+  .chapter-reader-nav { display:grid; grid-template-columns:1fr auto 1fr; gap:.7rem; align-items:center; margin-top:2rem; }
+  .chapter-nav-btn { min-height:48px; border:1px solid var(--border); background:var(--bg-card); color:var(--text); border-radius:8px; padding:.75rem 1rem; cursor:pointer; font-family:'Archivo',sans-serif; font-size:.8rem; transition:background .18s ease,border-color .18s ease,transform .18s ease; }
+  .chapter-nav-btn:hover { background:var(--bg-elevated); border-color:var(--accent); transform:translateY(-1px); }
+  .chapter-nav-btn:disabled { opacity:.3; cursor:default; transform:none; }
+  .chapter-nav-home { background:transparent; }
+  .chapter-progress { text-align:center; color:var(--text-muted); font-size:.7rem; letter-spacing:.08em; white-space:nowrap; }
+  @media (max-width:620px) {
+    .chapters-grid { grid-template-columns:1fr; }
+    .chapter-button:last-child { grid-column:auto; width:100%; }
+    .chapter-reader-nav { grid-template-columns:1fr 1fr; }
+    .chapter-progress { grid-column:1 / -1; grid-row:1; order:-1; }
+    .chapter-nav-btn:first-child { grid-column:1; }
+    .chapter-nav-btn:last-child { grid-column:2; }
+  }
+
   /* ---------- map ---------- */
   .map-wrap { max-width: 900px; margin: 0 auto; width: 100%; }
   .map-node circle.node-hit { cursor: pointer; }
@@ -227,6 +282,26 @@
     <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" stitchTiles="stitch" result="noise"/>
     <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.9 0"/>
   </filter>
+  <defs>
+    <linearGradient id="hillGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="var(--olive)" stop-opacity=".2"/>
+      <stop offset="100%" stop-color="var(--olive)" stop-opacity=".05"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="var(--accent-soft)" stop-opacity=".55"/>
+      <stop offset="45%" stop-color="var(--accent)" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="var(--border)" stop-opacity=".4"/>
+      <stop offset="100%" stop-color="var(--accent-dark)" stop-opacity=".25"/>
+    </linearGradient>
+    <radialGradient id="fireGlow" cx="50%" cy="55%" r="55%">
+      <stop offset="0%" stop-color="var(--accent-soft)" stop-opacity=".95"/>
+      <stop offset="55%" stop-color="var(--accent)" stop-opacity=".4"/>
+      <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
 </svg>
 <div class="grain" style="filter:url(#grainFilter); background:#000;"></div>
 <div class="vignette"></div>
@@ -242,8 +317,8 @@ const initialState = () => ({
   current: null,
   beatIndex: 0,
   day: 1,
-  resources: { water: 55, food: 48, money: 25, baleia: 78, family: 72 },
-  order: ['fazenda', 'estrada', 'caatinga', 'rio'],
+  resources: { water: 60, food: 55, money: 25, baleia: 78, family: 78 },
+  order: ['fazenda', 'estrada', 'caatinga', 'vila', 'rio'],
   unlocked: ['fazenda'],
   visited: [],
   finalChoiceUnlocked: false,
@@ -251,6 +326,7 @@ const initialState = () => ({
   decisions: [],
   endingType: null,
   endingCause: null,
+  chapterOpen: null,
 });
 let state = initialState();
 
@@ -278,6 +354,94 @@ function triggerEnding(type, cause) {
 /* ============================================================
    CONTEÚDO — LOCAIS E EVENTOS
    ============================================================ */
+const BOOK_CHAPTERS = [
+  { n: 1, title: 'Mudança', summary: 'A família de retirantes atravessa a caatinga árida e chega a uma fazenda abandonada.' },
+  { n: 2, title: 'Fabiano', summary: 'Fabiano se adapta como vaqueiro e revela sua visão resignada e quase animalesca de si mesmo.' },
+  { n: 3, title: 'Cadeia', summary: 'Na cidade, Fabiano é injustamente preso depois de uma discussão com o soldado amarelo.' },
+  { n: 4, title: 'Sinhá Vitória', summary: 'Sinhá Vitória alimenta pequenos sonhos, entre eles possuir uma cama de couro como a das pessoas importantes.' },
+  { n: 5, title: 'O Menino Mais Novo', summary: 'O menino admira o pai, deseja ser forte como ele e tenta compreender as palavras do mundo adulto.' },
+  { n: 6, title: 'O Menino Mais Velho', summary: 'O filho mais velho pergunta pelo significado das palavras e procura compreender o mundo à sua volta.' },
+  { n: 7, title: 'Inverno', summary: 'As chuvas chegam, trazendo alívio e fartura temporária para a família.' },
+  { n: 8, title: 'Festa', summary: 'Na festa de Natal da cidade, Fabiano bebe, veste roupas novas e sente a própria inferioridade.' },
+  { n: 9, title: 'Baleia', summary: 'Baleia adoece e Fabiano enfrenta a dolorosa decisão de sacrificá-la.' },
+  { n: 10, title: 'Contas', summary: 'Fabiano acerta as contas com o patrão, percebe a exploração e não consegue reagir.' },
+  { n: 11, title: 'O Soldado Amarelo', summary: 'A figura do soldado retorna, representando o medo e a opressão exercidos sobre Fabiano.' },
+  { n: 12, title: 'O Mundo Coberto de Penas', summary: 'As aves de arribação anunciam o retorno inevitável da seca.' },
+  { n: 13, title: 'Fuga', summary: 'A família abandona a terra seca e parte novamente em busca de um futuro melhor.' },
+];
+
+const CHAPTER_SUMMARIES = {
+  1: `Fabiano, sinhá Vitória, o filho mais novo, o filho mais velho e a cachorra Baleia, cinco figuras secas, se arrastam pela seca caatinga.
+
+Um dia antes a família era maior, pois havia um papagaio. Não havia mais alimento para mantê-lo e resolveram usá-lo de alimento. À Baleia restaram os ossos e a cabeça de seu antigo amigo.
+
+Juazeiros, juntos a uma cerca, apareceram pelo caminho e o grupo repousou em suas sombras. Fabiano explorou a propriedade que estava abandonada, provavelmente seus moradores fugiram devido à seca.
+
+A cachorra Baleia sentiu cheiro de preás e saiu à caça. Trouxe o animal nos dentes, para a alegria da família, que assou o roedor. À Baleia sobrariam novamente os ossos, talvez o couro.
+
+Ao anoitecer Fabiano percebe as estrelas sumirem em meio às nuvens. A chuva viria, a vida brotaria do chão e Fabiano seria dono daquele lugar.`,
+  2: `A chuva veio, e junto dela o dono da fazenda, que expulsou Fabiano. Mas o homem ofereceu seu trabalho e ficou por lá como vaqueiro.
+
+Estavam à procura de uma novilha perdida, Fabiano e Baleia, quando um dos filhos se aproximou e perguntou algo. Fabiano se incomodava com perguntas, não tinha o direito de saber nem o dever de responder. Falaria com sinhá Vitória para tratar da educação das crianças, ela não tinha tempo para isso, cuidando da casa, mas os garotos atormentavam demais Fabiano.
+
+Ele lembrou-se do Seu Tomás da bolandeira, um homem que lia muito, falava difícil, e não resistiu à seca, morreu. De que adiantava o conhecimento? Seu Tomás era educado, não mandava, pedia. Diferente dos homens normais e de seu patrão atual, que berrava por tudo, só para mostrar autoridade.
+
+Sinhá Vitória queria uma cama como a de Seu Tomás, Fabiano achava doidice.
+
+Fabiano olhava a caatinga e previa que a seca voltaria, o verde sumiria, ele precisaria apertar o cinto, encolhendo o estômago. Isso sempre acontecia com ele, e com o pai dele, e com o avô dele. Ele precisava resistir, ser duro. Ser homem. E quando morresse seus filhos deviam seguir o mesmo caminho. Era bom que aprendessem a ser duros como ele, para não morrerem fracos como Seu Tomás da bolandeira.`,
+  3: `Fabiano foi à feira da cidade comprar mantimentos. Ele era muito desconfiado de que todos lhe passavam a perna, mas não tinha vocabulário suficiente para questionar nada. Assim, rodou a feira procurando pechinchar no preço do querosene e da chita que sinhá Vitória lhe pediu.
+
+Parou para beber uma pinga e foi chamado por um soldado amarelo para jogar cartas. Sabia que colocar o dinheiro do querosene e da chita em jogo deixaria sinhá Vitória furiosa, mas não sabia esquivar-se do chamado de um soldado. Perdeu tudo.`,
+  4: `Sinhá Vitória acendia uma fogueira para preparar comida. Vendo o fogo surgir, a cadela Baleia se exalta e pula ao lado de sua dona, que lhe dá um pontapé. “Arreda!”
+
+Sinhá Vitória não estava bem. Incomodava-se com a cama de varas, queria uma cama de couro, como a de Seu Tomás da bolandeira. Fabiano até tentou calcular um jeito de comprar a tal cama, mas se perdeu nos números. Propôs que se economizasse nas roupas e no querosene. Sinhá Vitória achou um absurdo a proposta, pois eles já se vestiam mal e pouco usavam o querosene, se recolhiam cedo todas as noites. Ela sugeriu que o problema do dinheiro eram os gastos com pinga e jogo. Ele retrucou que muito era gasto com sapatos caros que ela usava em festas, com os quais ela mal sabia andar, parecia um papagaio. Sinhá Vitória entristeceu-se com a comparação.`,
+  5: `Vendo o pai amansar uma égua, o menino mais novo sentiu o desejo de realizar algo semelhante, que surpreendesse seu irmão e a cachorra Baleia. Fabiano dava-lhe admiração, o menino acompanhava seu trabalho torcendo pelo seu sucesso em meio à poeira levantada como um redemoinho pelo animal, sofrendo com suas quedas. Não entendia como sua mãe, seu irmão e Baleia não davam importância para seus feitos heroicos.
+
+Entre sonhos e pensamentos, surgiu no menino mais novo a ideia de montar uma cabra, tal qual seu pai montava na égua, guardadas as devidas proporções. Arquitetou o plano e pôs em prática. O garoto se segurou por alguns momentos, mas o agito do bicho o jogou ao chão. Seu irmão ria descontroladamente e Baleia olhava seriamente a cena, como quem reprovava aquilo. Lembrando-se das cabras abatidas, o garoto já sentiu-se vingado.`,
+  6: `Um dia o menino mais velho ouviu de Sinhá Terta, durante uma reza para curar uma espinhela do pai, a palavra “inferno”. Daí surgiu na cabeça da curiosa criança a dúvida: o que é “inferno”.
+
+Perguntou à sua mãe. Distraída, disse que era “um lugar ruim demais”. O menino insistiu, querendo mais, e foi desprezado.`,
+  7: `A família se reunia em torno do fogo, que mal aquecia parte do corpo dos meninos, que não conseguiam dormir por causa do vento gelado que entrava pelas frestas das paredes e portas. Eles estavam deitados no colo de Sinhá Vitória que conversava com Fabiano. Baleia observava o fogo.
+
+O filho mais velho foi buscar mais lenha. Fabiano se irritou, achava aquilo um desrespeito e iria castigá-lo. A mãe o defendeu.`,
+  8: `Fabiano, sinhá Vitória e os meninos iam à festa de natal na cidade.
+
+O pai e os meninos estavam vestidos de calças e paletós brancos feitos pela Sinhá Terta. As roupas eram apertadas e remendadas. Fabiano deu pouco tecido para fazê-las, desconfiando que Sinhá Terta roubava-lhe os retalhos. Sinhá Vitória, num vestido vermelho, calçava saltos que a impediam de andar. Fabiano esforçava uma postura diferenciada, ereta, mas a ele era incômoda.`,
+  9: `A cachorra Baleia estava para morrer. Os pelos caíam, manchas negras surgiam em sua pele, cheia de feridas e sangramentos. Sua boca inchada e com chagas dificultava que bebesse ou comesse.
+
+Fabiano entendeu que seria melhor matá-la de vez, para evitar mais sofrimento. Sinhá Vitória entendia que o procedimento também era necessário.`,
+  10: `Fabiano recebia, pelo seu trabalho, parcelas dos animais que criava. No entanto, por não ter terra própria e pegar constantes empréstimos com seu patrão, sempre vendia seus bezerros e cabritos para seu próprio patrão, por preço muito menor que o de mercado. Vivia, então, endividado.
+
+Certa vez tentou vender cortes de um porco na cidade, mas foi surpreendido por um fiscal do governo que queria lhe cobrar imposto. Desistiu então de negociar, todos o roubavam.`,
+  11: `Fabiano fazia uma busca por uma égua que havia fugido. Interessante notar que nesse momento o autor já indica uma mudança no clima, com a descrição de um ambiente novamente seco.
+
+No meio do caminho é sentida uma presença estranha. Ao se virar, empunhando o facão, Fabiano se depara com o soldado amarelo. Ali, no meio da caatinga, a figura que outrora provocara Fabiano e o mandara preso agora tremia de medo, não era seu ambiente propício, estava só, perdido, junto a um inimigo com facão. Ele amarelou de vez.`,
+  12: `O mulungu (espécie de árvore) próximo ao bebedouro se enchia de aves de arribação (que fazem migração de acordo com as estações). Elas bebiam água e seguiam em direção ao sul.
+
+Dona Vitória comentou com seu marido que as aves matariam o gado, ao beber sua água, que já secava. Dentro de sua curta capacidade de compreensão, Fabiano demorou um pouco para entender a relação entre as aves e o gado… Como poderia um bicho de penas matar um gado!? Enfim compreendeu e tomou uma atitude.`,
+  13: `A fazenda secou, os animais morriam. Fabiano matou e salgou um bezerro. Prepararam a nova viagem. Fabiano esperou até um último momento, quando a seca se tornada definitiva, e partiu com a família. Dona Vitória lembrou-se de Baleia, que não os acompanharia dessa vez, e chorou.
+
+No caminho, enquanto Dona Vitória puxa uma conversa, como sempre monossilábica, com seu marido, as crianças iam à frente. Fabiano achava bom aquilo, a conversa distraía e fazia o caminho parecer menor, e era bom aproveitar o entusiasmo inicial dos garotos.`
+};
+
+function chapterListHtml() {
+  return `
+    <div class="chapters-heading">
+      <p style="margin:0 0 .3rem; font-size:.7rem; letter-spacing:.12em; color:var(--accent); font-weight:700;">GUIA DE LEITURA</p>
+      <h3 class="display" style="margin:0; font-size:1.45rem;">Os 13 capítulos</h3>
+      <p style="margin:.45rem 0 0; color:var(--text-muted); font-size:.82rem; line-height:1.55;">Escolha um capítulo para abrir sua página de leitura.</p>
+    </div>
+    <div class="chapters-grid">
+      ${BOOK_CHAPTERS.map(ch => `
+        <button class="chapter-button" onclick="Actions.openChapter(${ch.n})">
+          <span class="chapter-number">CAPÍTULO ${ch.n}</span>
+          <span class="chapter-title">${ch.title}</span>
+          <span class="chapter-hint">Abrir capítulo →</span>
+        </button>
+      `).join('')}
+    </div>`;
+}
+
 const LOCATIONS = {
   fazenda: {
     label: 'Fazenda', article: 'a',
@@ -306,21 +470,28 @@ const LOCATIONS = {
         text: 'A estrada se estende sem fim, poeira e pedra sob os pés descalços. O sol pesa nos ombros de todos.' },
       { type: 'choice', title: 'A água está acabando', text: 'O sol está forte e ainda falta caminho. O que fazer?',
         options: [
-          { label: 'Continuar caminhando', delta: { water: -26 },
+          { label: 'Continuar caminhando', delta: { water: -20 },
             result: 'Seguem em frente, a garganta seca ardendo a cada passo.' },
           { label: 'Procurar água', random: [
-              { chance: 0.4, delta: { water: 14, food: -6 }, result: 'Encontram uma poça escondida entre as pedras. Bebem até saciar a sede.' },
-              { chance: 0.6, delta: { water: -16, family: -8 }, result: 'Nada além de pedra e poeira. O tempo perdido pesa sobre todos — e a água que tinham some no calor.' },
+              { chance: 0.45, delta: { water: 14, food: -5 }, result: 'Encontram uma poça escondida entre as pedras. Bebem até saciar a sede.' },
+              { chance: 0.55, delta: { water: -10, family: -5 }, result: 'Nada além de pedra e poeira. O tempo perdido pesa sobre todos.' },
             ] },
-          { label: 'Parar para descansar', delta: { water: -14, food: -6, family: 9 },
-            result: 'Param à sombra rala de uma árvore seca. O corpo agradece — mas a sede e a fome crescem um pouco mais.' },
+          { label: 'Parar para descansar', delta: { water: -10, food: -5, family: 8 },
+            result: 'Param à sombra rala de uma árvore seca. O corpo agradece — a sede e a fome crescem um pouco mais.' },
         ] },
       { type: 'choice', title: 'O menino mais novo', text: 'O menino mais novo arrasta os pés, olhos pesados de sono e fome.',
         options: [
-          { label: 'Carregar o menino no colo', delta: { water: -9, family: 6 },
+          { label: 'Carregar o menino no colo', delta: { water: -7, family: 6 },
             result: 'Fabiano o ergue nos ombros. O peso é maior — mas os olhos do menino fecham em paz.' },
-          { label: 'Incentivá-lo a continuar andando', delta: { family: -9 },
+          { label: 'Incentivá-lo a continuar andando', delta: { family: -7 },
             result: 'Fabiano diz que ele é forte. O menino engole o choro e segue, um passo atrás do outro, cada vez mais devagar.' },
+        ] },
+      { type: 'choice', title: 'Uma palavra estranha', text: 'O menino mais velho repete baixinho uma palavra que ouviu não sabe onde: "inferno". Pergunta o que ela quer dizer.',
+        options: [
+          { label: 'Tentar explicar, do jeito que dá', delta: { water: -5, family: 7 },
+            result: 'Fabiano gagueja, procura as palavras que não tem. Diz qualquer coisa sobre fogo e castigo. O menino não entende direito — mas gosta de ter sido respondido.' },
+          { label: 'Dizer que não sabe, e seguir andando', delta: { family: -6 },
+            result: 'Fabiano resmunga que não sabe, que ninguém nunca lhe explicou nada também. O menino guarda a palavra estranha para si, como guarda tantas outras.' },
         ] },
     ],
   },
@@ -333,13 +504,42 @@ const LOCATIONS = {
         text: 'Os galhos secos arranham as pernas. Um vulto amarelo se move ao longe, entre a poeira — a farda de quem manda, mesmo em terra de ninguém.' },
       { type: 'choice', title: 'Soldado Amarelo', text: 'Ele se aproxima. Não é a primeira vez que a farda decide o destino de gente como eles.',
         options: [
-          { label: 'Enfrentar, erguer a voz', delta: { money: -12, family: -16, water: -5 },
+          { label: 'Enfrentar, erguer a voz', delta: { money: -10, family: -12, water: -4 },
             result: 'Fabiano ergue a voz por um instante — coisa rara. O soldado ri, ameaça, e só depois segue seu caminho. O medo, esse, fica preso na garganta de todos.' },
-          { label: 'Desviar em silêncio', delta: { water: -12, family: -4 },
+          { label: 'Desviar em silêncio', delta: { water: -8, family: -3 },
             result: 'Fazem a volta, evitando o encontro, mais uma vez engolindo o orgulho. Mais um pedaço de chão sob os pés já cansados.' },
-          { label: 'Entregar o que carregam', delta: { money: -22, food: -14, family: 4 },
+          { label: 'Entregar o que carregam', delta: { money: -18, food: -10, family: 4 },
             result: 'Entregam o pouco que têm, como sempre entregam. Menos para comer — mas a paz de seguir vivos por mais um dia.' },
         ] },
+      { type: 'narration', title: 'O círculo',
+        text: 'Fabiano se pega pensando que já viveu isso antes — outra seca, outra fazenda, outro patrão, quase o mesmo soldado. Desconfia, sem saber nomear a ideia direito, de que essa vida não segue em linha reta: ela dá voltas, sempre voltando ao mesmo ponto seco de onde saiu.' },
+    ],
+  },
+  vila: {
+    label: 'Vila', article: 'a',
+    teaser: 'Um povoado pequeno na beira do caminho. Onde há gente, há também farda.',
+    x: 495, y: 222,
+    beats: [
+      { type: 'narration', title: 'A Vila',
+        text: 'Depois de dias na caatinga, as primeiras casas de taipa de um povoado surgem como um alívio estranho. Há uma vendinha, um armarinho, gente que olha os retirantes de longe, como quem já viu aquilo demais vezes para se importar.' },
+      { type: 'choice', title: 'Sinhá Vitória e o armarinho', text: 'Na vitrine da venda, Sinhá Vitória avista uma faca de aço reluzente — dessas que ela nunca teve, dessas que via nos sonhos.',
+        options: [
+          { label: 'Comprar a faca, mesmo sem sobra', delta: { money: -8, family: 8 },
+            result: 'Ela guarda a faca no embrulho como quem guarda um tesouro. Por um instante, o rosto cansado se ilumina de um jeito que a seca não alcança.' },
+          { label: 'Guardar o dinheiro e seguir sem nada', delta: { family: -5 },
+            result: 'Sinhá Vitória olha mais uma vez para a faca e desvia o olhar. Guarda a vontade no mesmo lugar onde guarda todas as outras.' },
+        ] },
+      { type: 'choice', title: 'A Cadeia', text: 'Um soldado o aborda na praça, sem motivo claro — só porque pode. "Você vai preso." Fabiano nem entende bem por quê.',
+        options: [
+          { label: 'Reagir, perguntar por quê', random: [
+              { chance: 0.55, delta: { family: -14, money: -8 }, result: 'Apanha sem entender direito o motivo. A vergonha dói mais do que os golpes — e demora mais a passar.' },
+              { chance: 0.45, delta: { family: -6 }, result: 'O soldado grita, ameaça, humilha em praça pública — mas o solta depois de um tempo comprido de medo.' },
+            ] },
+          { label: 'Baixar a cabeça e obedecer', delta: { family: -8, money: -10, water: -6, food: -6 },
+            result: 'Fica preso por dias, sem julgamento, sem explicação — só por ser quem é, pobre e sem nome que pese. Quando sai, o sol já mudou de posição no céu. Algo nele também mudou.' },
+        ] },
+      { type: 'narration', title: 'Depois da cadeia',
+        text: 'Fabiano sai sem entender ainda o que fez de errado — porque não fez nada, só existiu no lugar errado, do jeito errado de se existir por ali. No sertão, a lei de quem manda pesa mais do que qualquer papel escrito.' },
     ],
   },
   rio: {
@@ -351,22 +551,33 @@ const LOCATIONS = {
         text: 'O leito quase seco ainda guarda um fio de água turva. Baleia caminha mais devagar a cada légua.' },
       { type: 'choice', title: 'Baleia', text: 'Baleia está fraca, as costelas à mostra. A comida que resta não será suficiente para todos.',
         options: [
-          { label: 'Dar comida para Baleia', delta: { food: -18, baleia: 28, family: -6 },
+          { label: 'Dar comida para Baleia', delta: { food: -14, baleia: 28, family: -4 },
             result: 'Dividem o pouco que têm com ela. Baleia ergue a cabeça, os olhos ainda vivos — talvez os únicos de verdade compreensivos naquele caminho.' },
-          { label: 'Guardar comida para a família', delta: { food: -6, baleia: -26, family: 4 },
+          { label: 'Guardar comida para a família', delta: { food: -5, baleia: -22, family: 3 },
             result: 'Guardam a comida para os meninos. Baleia segue mesmo assim, cambaleando atrás, sem entender por quê.' },
         ] },
       { type: 'choice', title: 'A travessia', text: 'É preciso atravessar — mas a correnteza ainda esconde perigo.',
         options: [
           { label: 'Atravessar agora', random: [
-              { chance: 0.42, delta: { food: -4 }, result: 'Atravessam com cuidado. A água fria bate na cintura, mas todos chegam à outra margem.' },
-              { chance: 0.58, delta: { family: -20, money: -14, food: -6 }, result: 'A correnteza é mais forte do que parecia. Levam parte do que carregavam — e um susto que não passa.' },
+              { chance: 0.55, delta: { food: -3 }, result: 'Atravessam com cuidado. A água fria bate na cintura, mas todos chegam à outra margem.' },
+              { chance: 0.45, delta: { family: -14, money: -10, food: -4 }, result: 'A correnteza é mais forte do que parecia. Levam parte do que carregavam — e um susto que não passa.' },
             ] },
-          { label: 'Procurar uma passagem segura', delta: { water: -18, food: -12 },
+          { label: 'Procurar uma passagem segura', delta: { water: -14, food: -9 },
             result: 'Caminham margem acima até encontrar um vau raso. Mais tempo, menos risco — e menos do pouco que ainda tinham.' },
-          { label: 'Esperar e acampar ali', delta: { water: -14, food: -13, baleia: -8, family: 4 },
+          { label: 'Esperar e acampar ali', delta: { water: -10, food: -9, baleia: -6, family: 4 },
             result: 'Armam um acampamento simples. O descanso alivia os corpos — mas o tempo urge, e o tempo, no sertão, também é fome.' },
         ] },
+      { type: 'choice', title: 'A doença', text: 'Nos dias que seguem, Baleia enfraquece ainda mais. As pernas tremem, os olhos ficam vidrados e distantes. Fabiano teme a doença que às vezes mata os cachorros do sertão.',
+        options: [
+          { label: 'Levá-la ainda mais adiante, na esperança', delta: { baleia: -10, family: 5 },
+            result: 'Carregam-na um trecho nos braços, revezando o peso. Ela geme baixinho, mas ainda reconhece o cheiro e os passos de cada um.' },
+          { label: 'Afastá-la, por medo do contágio', delta: { baleia: -16, family: -4 },
+            result: 'Afastam-na do grupo, por precaução. Baleia os observa de longe, sem entender a distância que, de repente, se abriu entre eles.' },
+        ] },
+      { type: 'narration', title: 'Baleia',
+        text: (s) => s.resources.baleia <= 15
+          ? 'Na manhã seguinte, Baleia não se levanta mais. Fabiano faz, em silêncio e longe dos meninos, o que sua consciência resiste a fazer. A família segue sem ela — mais uma perda que ninguém ali sabe nomear direito.'
+          : 'Baleia segue com a família, ainda fraca, mas viva — um fio de lealdade que nem a seca, nem a fome, conseguiram cortar de vez.' },
     ],
   },
   cidade: {
@@ -385,6 +596,18 @@ const LOCATIONS = {
   },
 };
 
+const CHAPTER = { fazenda: [1,2,4,5,6,7,9,10,11,12,13], estrada: [1,13], caatinga: [1,12,13], vila: [3,8,10,11], rio: [1,7,9], cidade: [3,8,10,11], abrigo: [13] };
+
+function chapterLabelFor(id) {
+  const nums = CHAPTER[id] || [];
+  return nums.length ? nums.map(n => `Cap. ${n}`).join(' · ') : 'Adaptação';
+}
+
+function chapterTitleFor(id) {
+  const nums = CHAPTER[id] || [];
+  return nums.length === 1 ? BOOK_CHAPTERS[nums[0]-1].title : 'Passagem pela obra';
+}
+
 /* ============================================================
    RENDERIZAÇÃO
    ============================================================ */
@@ -393,8 +616,8 @@ const app = document.getElementById('app');
 function icon(name) {
   const icons = {
     water: '<path d="M10 2 C10 2 4 10.5 4 14.5 a6 6 0 0 0 12 0 C16 10.5 10 2 10 2z"/>',
-    food: '<g><line x1="10" y1="2" x2="10" y2="18"/><path d="M10 4 L6 6.2 M10 4 L14 6.2 M10 8 L6 10.2 M10 8 L14 10.2 M10 12 L6 14.2 M10 12 L14 14.2"/></g>',
-    money: '<g><circle cx="10" cy="10" r="7.2"/><circle cx="10" cy="10" r="3.4"/></g>',
+    food: '<g><path d="M2.3 6.1 C2.8 3.3 6.1 2.1 10.5 2.2 C15.1 2.3 18 4.2 17.8 8.3 C17.7 11.7 15.7 15.9 11.9 17 C8.7 17.9 6.3 16.2 5.2 13.8 C4.2 11.7 3.8 10.6 2.4 9.5 C1.4 8.7 1.6 7 2.3 6.1 Z"/><path d="M3 5.9 C5.8 5.4 8.1 5.8 10.2 7.2 C12.4 8.6 13.7 10.5 14.3 12.7 C14.8 14.5 13.9 15.6 12.3 16.2 C10.2 17 8.1 15.9 7.4 14 C6.6 11.8 6.1 10.2 4.3 9.1 C3.3 8.5 2.8 7.3 3 5.9 Z"/><circle cx="6.2" cy="5.3" r="1.45"/><path d="M7.4 5.7 C9.2 6.1 10.8 6.7 12.2 7.8"/><path d="M10.9 9.2 C12.4 8.2 14.1 7.7 16.1 7.9"/><path d="M12.5 12.1 C13.7 11.4 15.1 11.2 16.5 11.5"/></g>',
+    money: '<g><circle cx="10" cy="10" r="7.2"/><path d="M12.5 6.8 C11.9 6.1 11 5.8 10 5.8 C8.4 5.8 7.4 6.7 7.4 7.8 C7.4 9.1 8.5 9.6 10.1 10 C11.7 10.4 12.6 11 12.6 12.1 C12.6 13.4 11.4 14.2 10 14.2 C8.9 14.2 7.9 13.8 7.3 13.1"/><path d="M10 4.4 V15.6"/></g>',
     baleia: '<g><ellipse cx="10" cy="13.2" rx="4.2" ry="3.1"/><ellipse cx="5" cy="7.4" rx="1.5" ry="2"/><ellipse cx="8.8" cy="4.6" rx="1.5" ry="2"/><ellipse cx="12.4" cy="4.6" rx="1.5" ry="2"/><ellipse cx="15.4" cy="7.4" rx="1.5" ry="2"/></g>',
     family: '<path d="M10 17 C10 17 2.5 12.2 2.5 7.3 C2.5 4.7 4.6 3 6.8 3 C8.3 3 9.4 3.8 10 5 C10.6 3.8 11.7 3 13.2 3 C15.4 3 17.5 4.7 17.5 7.3 C17.5 12.2 10 17 10 17z"/>',
   };
@@ -417,6 +640,179 @@ function resourceBar() {
     ${bar('baleia', 'baleia', r.baleia)}
     ${bar('family', 'family', r.family)}
   </div>`;
+}
+
+function bgFor(id) {
+  const c = 'var(--olive)';
+  const b = 'var(--border)';
+  const cactus = (x, y, s, dur, delay, op) => `<g class="sway-el" style="animation:sway ${dur}s ease-in-out infinite ${delay}s; transform-origin:${x}px ${y}px;" opacity="${op}">
+    <path d="M${x},${y} C${x - 10 * s},${y - 45 * s} ${x + 10 * s},${y - 60 * s} ${x},${y - 90 * s}" stroke="${c}" stroke-width="${6 * s}" fill="none" stroke-linecap="round"/>
+    <path d="M${x},${y - 50 * s} C${x - 12 * s},${y - 58 * s} ${x - 20 * s},${y - 72 * s} ${x - 18 * s},${y - 90 * s}" stroke="${c}" stroke-width="${4 * s}" fill="none" stroke-linecap="round"/>
+    <path d="M${x},${y - 40 * s} C${x + 14 * s},${y - 48 * s} ${x + 22 * s},${y - 62 * s} ${x + 20 * s},${y - 78 * s}" stroke="${c}" stroke-width="${4 * s}" fill="none" stroke-linecap="round"/>
+  </g>`;
+  const ballCactus = (x, y, r) => `<g opacity=".4">
+    <ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 0.85}" fill="none" stroke="${c}" stroke-width="2"/>
+    <path d="M${x - r * 0.6},${y - r * 0.6} L${x - r * 0.6},${y - r * 1.25} M${x},${y - r * 0.85} L${x},${y - r * 1.55} M${x + r * 0.6},${y - r * 0.6} L${x + r * 0.6},${y - r * 1.25}" stroke="${c}" stroke-width="1.5"/>
+  </g>`;
+  const house = (x, y, w, roofH, op) => {
+    const wallH = 55, wallTop = y - wallH, roofTop = wallTop - roofH, midX = x + w / 2;
+    return `<g opacity="${op}">
+      <path d="M${x - 6},${wallTop} L${midX},${roofTop} L${x + w + 6},${wallTop} Z" fill="${b}"/>
+      <rect x="${x}" y="${wallTop}" width="${w}" height="${wallH}" fill="${b}" opacity=".85"/>
+      <rect x="${x + w * 0.6}" y="${wallTop + wallH * 0.28}" width="${w * 0.2}" height="${wallH * 0.3}" fill="var(--bg)" opacity=".6"/>
+      <rect x="${x + w * 0.16}" y="${wallTop + wallH * 0.48}" width="${w * 0.22}" height="${wallH * 0.52}" fill="var(--bg)" opacity=".5"/>
+    </g>`;
+  };
+  const reed = (x, y, h, delay) => `<path d="M${x},${y} C${x - 4},${y - h * 0.5} ${x + 6},${y - h * 0.7} ${x - 2},${y - h}" stroke="${c}" stroke-width="2" fill="none" opacity=".45" class="sway-el" style="animation:sway ${4 + delay}s ease-in-out infinite ${delay}s; transform-origin:${x}px ${y}px;"/>`;
+  const stalks = Array.from({ length: 9 }, (_, i) => {
+    const x = 300 + i * 15;
+    return `<path d="M${x},430 C${x - 3},420 ${x + 3},416 ${x},409" stroke="${c}" stroke-width="2" opacity=".42" fill="none" stroke-linecap="round"/>`;
+  }).join('');
+  const scenes = {
+    fazenda: `<svg viewBox="0 0 800 500" preserveAspectRatio="xMidYMax slice">
+      <circle cx="650" cy="95" r="90" fill="url(#sunGlow)"/>
+      <path d="M0,268 C120,232 200,258 260,250 C360,238 420,262 480,250 C560,236 650,260 800,244 L800,500 L0,500 Z" fill="url(#hillGrad)"/>
+
+      <g opacity=".38">
+        <ellipse cx="238" cy="420" rx="34" ry="11" fill="${b}"/>
+        <path d="M206,420 Q214,404 228,408" stroke="${b}" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <line x1="216" y1="429" x2="212" y2="441" stroke="${b}" stroke-width="3" stroke-linecap="round"/>
+        <line x1="260" y1="429" x2="264" y2="441" stroke="${b}" stroke-width="3" stroke-linecap="round"/>
+      </g>
+
+      <path d="M58,342 C80,312 112,300 140,312 L140,344" fill="${b}" opacity=".22"/>
+      <line x1="66" y1="430" x2="63" y2="348" stroke="${b}" stroke-width="4" opacity=".55" stroke-linecap="round"/>
+      <line x1="106" y1="430" x2="104" y2="345" stroke="${b}" stroke-width="4" opacity=".55" stroke-linecap="round"/>
+      <line x1="146" y1="430" x2="145" y2="348" stroke="${b}" stroke-width="4" opacity=".55" stroke-linecap="round"/>
+      <path d="M60,368 Q105,360 148,366" stroke="${b}" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"/>
+      <path d="M62,402 Q105,395 150,400" stroke="${b}" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"/>
+
+      ${stalks}
+
+      <g class="sway-el" style="animation:sway 8s ease-in-out infinite; transform-origin:452px 430px;">
+        <ellipse cx="452" cy="432" rx="46" ry="7" fill="${b}" opacity=".16"/>
+        <path d="M452,430 C450,390 447,360 448,320" stroke="${b}" stroke-width="7" fill="none" opacity=".6" stroke-linecap="round"/>
+        <path d="M449,392 C430,378 415,365 390,330" stroke="${b}" stroke-width="4" fill="none" opacity=".55" stroke-linecap="round"/>
+        <path d="M390,330 C384,320 388,308 382,298" stroke="${b}" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"/>
+        <path d="M449,358 C468,340 485,330 512,296" stroke="${b}" stroke-width="4" fill="none" opacity=".55" stroke-linecap="round"/>
+        <path d="M512,296 C518,286 516,274 524,264" stroke="${b}" stroke-width="3" fill="none" opacity=".5" stroke-linecap="round"/>
+        <path d="M449,332 C458,310 460,295 468,262" stroke="${b}" stroke-width="3.5" fill="none" opacity=".5" stroke-linecap="round"/>
+        <path d="M451,408 C438,406 428,402 418,400" stroke="${b}" stroke-width="3" fill="none" opacity=".4" stroke-linecap="round"/>
+        <ellipse cx="520" cy="270" rx="6" ry="4.5" fill="${c}" opacity=".55"/>
+      </g>
+      <circle cx="470" cy="300" r="2" fill="${c}" opacity=".55" class="fly-el" style="animation:flyLoop 4s ease-in-out infinite;"/>
+      <circle cx="482" cy="312" r="1.6" fill="${c}" opacity=".45" class="fly-el" style="animation:flyLoop 5.3s ease-in-out infinite .4s;"/>
+
+      ${house(600, 432, 108, 52, .85)}
+
+      <path d="M110,110 Q125,98 140,110 Q125,104 110,110 Z" fill="${c}" opacity=".35" class="fly-el" style="animation:flyLoop 24s linear infinite;"/>
+
+      <path d="M0,430 L800,430" stroke="${b}" stroke-width="1" opacity=".18"/>
+      <path d="M232,430 C240,444 232,452 240,466 C244,472 236,478 242,488" stroke="${b}" stroke-width="1.4" fill="none" opacity=".3"/>
+      <path d="M556,432 C548,446 554,456 546,470" stroke="${b}" stroke-width="1.4" fill="none" opacity=".3"/>
+    </svg>`,
+    estrada: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
+      <circle cx="140" cy="80" r="80" fill="url(#sunGlow)"/>
+      <path d="M0,270 C150,248 300,262 450,254 C600,246 700,258 800,250 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
+      <rect x="0" y="255" width="800" height="30" fill="url(#hillGrad)" class="haze-el" style="animation:hazePulse 5s ease-in-out infinite;"/>
+      <path d="M340,400 L460,400 L426,266 L374,266 Z" fill="${b}" opacity=".2"/>
+      <line x1="330" y1="400" x2="337" y2="336" stroke="${b}" stroke-width="3" opacity=".3" stroke-linecap="round"/>
+      <line x1="470" y1="400" x2="463" y2="336" stroke="${b}" stroke-width="3" opacity=".3" stroke-linecap="round"/>
+      ${cactus(660, 340, 0.55, 7, 0, .4)}
+      ${cactus(120, 352, 0.4, 6.5, .4, .35)}
+      <circle cx="150" cy="240" r="18" fill="${b}" opacity=".18" class="fly-el" style="animation:flyLoop 10s linear infinite;"/>
+    </svg>`,
+    caatinga: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
+      <path d="M0,280 C160,258 320,272 480,262 C600,254 700,266 800,258 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
+      ${cactus(110, 385, 0.75, 6, 0, .55)}
+      ${cactus(225, 396, 0.5, 7, .6, .4)}
+      ${cactus(420, 390, 0.9, 6.5, .3, .55)}
+      ${cactus(600, 382, 0.65, 7.5, .5, .48)}
+      ${cactus(710, 397, 0.5, 6.8, .8, .4)}
+      ${ballCactus(320, 405, 14)}
+      ${ballCactus(510, 410, 10)}
+      <path d="M350,400 L350,378" stroke="${b}" stroke-width="3" opacity=".25" stroke-linecap="round"/>
+    </svg>`,
+    vila: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <linearGradient id="vilaSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent-soft)" stop-opacity=".12"/><stop offset="1" stop-color="var(--bg)" stop-opacity="0"/></linearGradient>
+      </defs>
+      <rect width="800" height="400" fill="url(#vilaSky)"/>
+      <path d="M0,285 C130,266 255,282 385,270 C520,258 665,278 800,260 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
+      <path d="M355,400 C390,355 405,325 430,295 C455,325 475,360 505,400 Z" fill="var(--bg-card)" opacity=".75"/>
+      ${house(32, 370, 112, 46, .72)}
+      ${house(175, 360, 86, 40, .58)}
+      ${house(525, 370, 104, 48, .65)}
+      ${house(654, 362, 92, 42, .54)}
+      <g opacity=".62">
+        <rect x="300" y="250" width="108" height="120" rx="2" fill="var(--border)"/>
+        <path d="M288,252 L354,205 L420,252 Z" fill="var(--accent-dark)" opacity=".8"/>
+        <rect x="320" y="292" width="26" height="42" fill="var(--bg)"/>
+        <rect x="360" y="275" width="30" height="25" fill="var(--bg)" opacity=".75"/>
+        <path d="M306,315 L402,315" stroke="var(--accent-dark)" stroke-width="4" opacity=".55"/>
+      </g>
+      <g opacity=".5">
+        <rect x="110" y="316" width="34" height="4" fill="var(--border)"/><rect x="116" y="298" width="4" height="20" fill="var(--border)"/><rect x="136" y="300" width="4" height="18" fill="var(--border)"/>
+        <path d="M88,370 Q120,340 150,370" fill="none" stroke="var(--olive)" stroke-width="4"/>
+      </g>
+      <g opacity=".45">
+        <circle cx="245" cy="330" r="6" fill="var(--text)"/><path d="M245,336 L245,360 M245,343 L234,351 M245,343 L256,350 M245,360 L237,372 M245,360 L253,372" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="570" cy="325" r="6" fill="var(--text)"/><path d="M570,331 L570,355 M570,338 L560,346 M570,338 L581,345 M570,355 L563,367 M570,355 L578,367" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <path d="M0,374 C180,360 280,382 430,367 C570,352 670,380 800,365" stroke="var(--border)" stroke-width="3" fill="none" opacity=".5"/>
+    </svg>`,
+    rio: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
+      <path d="M0,288 C160,270 320,280 480,272 C600,266 700,276 800,268 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
+      ${reed(55, 320, 42, 0)}
+      ${reed(78, 326, 34, .3)}
+      ${reed(722, 318, 40, .15)}
+      ${reed(744, 324, 32, .5)}
+      <path d="M0,330 Q60,318 120,330 T240,330 T360,330 T480,330 T600,330 T720,330 T800,328 V400 H0 Z" fill="url(#waterGrad)" class="wave-el" style="animation:waveFlow 6s linear infinite;"/>
+      <path d="M0,358 Q60,348 120,358 T240,358 T360,358 T480,358 T600,358 T720,358 T800,356 V400 H0 Z" fill="url(#waterGrad)" opacity=".7" class="wave-el" style="animation:waveFlow 8s linear infinite reverse;"/>
+      <ellipse cx="220" cy="345" rx="16" ry="7" fill="${b}" opacity=".4"/>
+      <ellipse cx="560" cy="352" rx="20" ry="8" fill="${b}" opacity=".35"/>
+      <circle cx="380" cy="340" r="10" fill="none" stroke="${b}" stroke-width="1.5" opacity=".3" class="ripple-el" style="animation:ripple 3s ease-out infinite; transform-origin:380px 340px;"/>
+      <circle cx="480" cy="360" r="8" fill="none" stroke="${b}" stroke-width="1.5" opacity=".25" class="ripple-el" style="animation:ripple 3.6s ease-out infinite 1s; transform-origin:480px 360px;"/>
+    </svg>`,
+    cidade: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
+      <circle cx="630" cy="95" r="95" fill="url(#sunGlow)" opacity=".65"/>
+      <path d="M0,300 C150,282 310,292 455,278 C600,264 700,280 800,270 L800,400 L0,400 Z" fill="url(#hillGrad)" opacity=".65"/>
+      <path d="M0,318 L0,270 L82,270 L82,245 L138,245 L138,292 L190,292 L190,230 L255,230 L255,280 L318,280 L318,220 L382,220 L382,285 L445,285 L445,245 L510,245 L510,275 L570,275 L570,210 L635,210 L635,270 L700,270 L700,235 L770,235 L770,285 L800,285 L800,400 L0,400 Z" fill="var(--border)" opacity=".42"/>
+      <g opacity=".7">
+        <rect x="72" y="286" width="8" height="8" fill="var(--accent-soft)" class="flicker-el" style="animation:flicker 3s ease-in-out infinite"/>
+        <rect x="205" y="252" width="9" height="10" fill="var(--accent-soft)" class="flicker-el" style="animation:flicker 2.4s ease-in-out infinite .4s"/>
+        <rect x="337" y="242" width="9" height="10" fill="var(--accent-soft)" class="flicker-el" style="animation:flicker 3.2s ease-in-out infinite 1s"/>
+        <rect x="585" y="232" width="9" height="10" fill="var(--accent-soft)" class="flicker-el" style="animation:flicker 2.7s ease-in-out infinite .2s"/>
+        <rect x="715" y="255" width="9" height="10" fill="var(--accent-soft)" class="flicker-el" style="animation:flicker 3.5s ease-in-out infinite .7s"/>
+      </g>
+      <g opacity=".58">
+        <path d="M380,310 L380,220 L430,185 L480,220 L480,310 Z" fill="var(--bg-card)"/>
+        <path d="M368,222 L430,170 L492,222 Z" fill="var(--accent-dark)"/>
+        <rect x="418" y="244" width="24" height="66" fill="var(--border)"/>
+        <circle cx="430" cy="207" r="8" fill="var(--accent-soft)" opacity=".8"/>
+      </g>
+      <g opacity=".42">
+        <line x1="120" y1="330" x2="120" y2="255" stroke="var(--text)" stroke-width="4"/><line x1="120" y1="260" x2="92" y2="276" stroke="var(--text)" stroke-width="3"/><line x1="120" y1="260" x2="148" y2="276" stroke="var(--text)" stroke-width="3"/>
+        <line x1="680" y1="335" x2="680" y2="250" stroke="var(--text)" stroke-width="4"/><circle cx="680" cy="245" r="14" fill="url(#fireGlow)"/>
+      </g>
+      <path d="M0,370 Q190,350 400,370 T800,365" stroke="var(--accent-dark)" stroke-width="16" opacity=".18" fill="none"/>
+      <path d="M0,368 Q200,348 400,368 T800,363" stroke="var(--border)" stroke-width="2" opacity=".6" fill="none"/>
+    </svg>`,
+    abrigo: `<svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMax slice">
+      <path d="M0,300 C150,282 300,292 450,278 C610,264 700,282 800,270 L800,400 L0,400 Z" fill="url(#hillGrad)"/>
+      <path d="M235,370 L270,245 L535,245 L570,370 Z" fill="var(--border)" opacity=".28"/>
+      <path d="M205,250 L402,170 L600,250 Z" fill="var(--accent-dark)" opacity=".68"/>
+      <path d="M225,247 L402,184 L580,247" stroke="var(--text)" stroke-width="9" fill="none" opacity=".38"/>
+      <g stroke="var(--text)" stroke-width="7" opacity=".42"><line x1="260" y1="245" x2="250" y2="370"/><line x1="540" y1="245" x2="552" y2="370"/><line x1="318" y1="230" x2="318" y2="370"/><line x1="482" y1="230" x2="482" y2="370"/></g>
+      <path d="M345,370 L345,292 Q402,260 459,292 L459,370 Z" fill="var(--bg)" opacity=".8"/>
+      <path d="M355,370 L355,300 Q402,275 449,300 L449,370" stroke="var(--accent-dark)" stroke-width="4" fill="none" opacity=".65"/>
+      <g opacity=".58"><path d="M286,350 Q302,326 318,350 L318,370 L286,370 Z" fill="var(--accent-soft)"/><path d="M490,354 Q505,330 522,354 L522,370 L490,370 Z" fill="var(--accent-soft)"/></g>
+      <g class="flicker-el" style="animation:flicker 1.5s ease-in-out infinite"><circle cx="402" cy="340" r="18" fill="url(#fireGlow)"/><path d="M394,354 Q402,330 410,354 Q402,347 394,354" fill="var(--accent-soft)" opacity=".8"/></g>
+      <g opacity=".45"><circle cx="170" cy="333" r="7" fill="var(--text)"/><path d="M170,340 L170,364 M170,346 L158,353 M170,346 L181,352 M170,364 L162,376 M170,364 L178,376" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/><circle cx="650" cy="329" r="7" fill="var(--text)"/><path d="M650,336 L650,360 M650,342 L638,349 M650,342 L661,349 M650,360 L642,372 M650,360 L658,372" stroke="var(--text)" stroke-width="3" stroke-linecap="round"/></g>
+      <path d="M0,374 Q190,358 400,374 T800,370" stroke="var(--border)" stroke-width="2" opacity=".55" fill="none"/>
+    </svg>`,
+  };
+  return scenes[id] ? `<div class="scene-bg">${scenes[id]}</div>` : '';
 }
 
 function dustField(n = 16) {
@@ -456,22 +852,63 @@ function screenEntry() {
 }
 
 /* ---------- SOBRE A OBRA ---------- */
+function screenChapter(n) {
+  const ch = BOOK_CHAPTERS[n - 1];
+  const summary = CHAPTER_SUMMARIES[n] || 'Resumo não disponível.';
+  const paragraphs = summary.split(/\n\n+/).map(p => `<p>${p}</p>`).join('');
+  const prev = n > 1 ? BOOK_CHAPTERS[n - 2] : null;
+  const next = n < BOOK_CHAPTERS.length ? BOOK_CHAPTERS[n] : null;
+  return `
+  <div class="scene" style="justify-content:flex-start; align-items:center; padding:2.5rem 1.25rem 3rem; overflow-y:auto;">
+    <article class="chapter-reader">
+      <header class="chapter-reader-head">
+        <p class="chapter-reader-kicker">CAPÍTULO ${n} DE 13</p>
+        <h2 class="chapter-reader-title">${ch.title}</h2>
+      </header>
+      <div class="chapter-reader-text">${paragraphs}</div>
+      <div class="chapter-reader-source">
+        <a href="https://www.resumoporcapitulo.com.br/vidas-secas" target="_blank" rel="noopener noreferrer">Acessar resumos e livro online completo</a>
+      </div>
+      <nav class="chapter-reader-nav" aria-label="Navegação entre capítulos">
+        <button class="chapter-nav-btn" onclick="Actions.openChapter(${n - 1})" ${prev ? '' : 'disabled'}>${prev ? '← ' + prev.title : '← Primeiro capítulo'}</button>
+        <button class="chapter-nav-btn chapter-nav-home" onclick="Actions.backToAbout()">Início da obra</button>
+        <button class="chapter-nav-btn" onclick="Actions.openChapter(${n + 1})" ${next ? '' : 'disabled'}>${next ? next.title + ' →' : 'Último capítulo →'}</button>
+        <div class="chapter-progress">${n} / ${BOOK_CHAPTERS.length}</div>
+      </nav>
+    </article>
+  </div>`;
+}
+
 function screenAbout() {
   return `
-  <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:2.5rem 1.25rem;">
-    <div style="max-width:560px;">
+  <div class="scene" style="justify-content:flex-start; align-items:center; text-align:center; padding:2.5rem 1.25rem 3rem; overflow-y:auto;">
+    <div style="max-width:760px; width:100%;">
       <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.8rem;">SOBRE A OBRA</p>
-      <h2 class="display" style="font-size:1.8rem; margin:0 0 1.3rem;">Vidas Secas</h2>
-      <p class="prose-cap" style="margin:0 auto 1rem; text-align:left; color:var(--text); line-height:1.75; font-size:.98rem;">
-        Publicado em 1938 por Graciliano Ramos, o romance acompanha Fabiano, sua mulher Sinhá Vitória, dois meninos sem nome fixo e a cadela Baleia — uma família de retirantes que atravessa, repetidas vezes, o ciclo de seca, fuga e retorno no sertão de Alagoas.
-      </p>
-      <p class="prose-cap" style="margin:0 auto 1rem; text-align:left; color:var(--text); line-height:1.75; font-size:.98rem;">
-        É uma obra da segunda fase do Modernismo brasileiro, marcada pela prosa seca e enxuta, pela crítica social ao abandono do sertanejo e pelo uso do discurso indireto livre — o narrador entra nos pensamentos de personagens que mal têm vocabulário para nomear o que sentem, inclusive os de Baleia.
-      </p>
-      <p class="prose-cap" style="margin:0 auto 1.6rem; text-align:left; color:var(--text-muted); line-height:1.75; font-size:.92rem; font-style:italic;">
-        Este protótipo não recria os capítulos do livro. Ele transforma seus temas centrais — escassez, submissão, silêncio, sobrevivência — em decisões que você toma, sentindo o peso de cada escolha.
-      </p>
-      <button class="btn" onclick="Actions.backFromAbout()">Voltar</button>
+      <h2 class="display" style="font-size:clamp(2rem,6vw,2.8rem); margin:0 0 1.5rem;">Vidas Secas</h2>
+
+      <div style="text-align:center; padding-bottom:.3rem; max-width:700px; margin:0 auto;">
+        <p style="font-family:'Fraunces',serif; font-size:1.35rem; margin:0 0 .9rem; color:var(--accent-dark);">Introdução</p>
+        <p class="prose-cap" style="margin:0 auto 1rem; color:var(--text); line-height:1.75; font-size:.98rem;">
+          Publicado em 1938, <em>Vidas Secas</em> narra a saga de retirantes do sertão nordestino enquanto vítimas da natureza, da ignorância e da estrutura social à qual estão submetidos. A obra de Graciliano Ramos pertence à segunda fase do modernismo nacional, marcada pelo realismo social e pelo regionalismo.
+        </p>
+        <p class="prose-cap" style="margin:0 auto 1rem; color:var(--text); line-height:1.75; font-size:.98rem;">
+          Este resumo por capítulo reflete o conteúdo da obra original em uma linguagem clara e concisa, sem deixar de lado as informações, os episódios e as tramas que sustentam a história como um todo.
+        </p>
+        <p class="prose-cap" style="margin:0 auto 1rem; color:var(--text-muted); line-height:1.75; font-size:.92rem;">
+          O texto original completo deste título, em domínio público, com atualização ortográfica, está disponível para leitura em paralelo aos resumos: há botões de navegação ao final dos capítulos para alternar entre as versões.
+        </p>
+        <p class="prose-cap" style="margin:0 auto; color:var(--text-muted); line-height:1.75; font-size:.92rem;">
+          Caso tenha qualquer dúvida, deixe um comentário ou entre em contato.
+        </p>
+      </div>
+
+      <div class="chapters-panel" style="margin-top:1.7rem;">${chapterListHtml()}</div>
+
+      <div style="margin-top:1.4rem; text-align:center;">
+        <a href="https://www.resumoporcapitulo.com.br/vidas-secas" target="_blank" rel="noopener noreferrer" style="color:var(--accent-dark); font-size:.85rem;">Acessar resumos e livro online completo</a>
+      </div>
+
+      <button class="btn" onclick="Actions.backFromAbout()" style="margin-top:1.8rem;">Voltar</button>
     </div>
   </div>`;
 }
@@ -537,9 +974,10 @@ function mapSvg() {
   let paths = '';
   paths += seg('fazenda', 'estrada', ['fazenda']);
   paths += seg('estrada', 'caatinga', ['fazenda','estrada']);
-  paths += seg('caatinga', 'rio', ['fazenda','estrada','caatinga']);
-  paths += seg('rio', 'cidade', ['fazenda','estrada','caatinga','rio']);
-  paths += seg('rio', 'abrigo', ['fazenda','estrada','caatinga','rio']);
+  paths += seg('caatinga', 'vila', ['fazenda','estrada','caatinga']);
+  paths += seg('vila', 'rio', ['fazenda','estrada','caatinga','vila']);
+  paths += seg('rio', 'cidade', ['fazenda','estrada','caatinga','vila','rio']);
+  paths += seg('rio', 'abrigo', ['fazenda','estrada','caatinga','vila','rio']);
 
   let nodes = '';
   for (const id in P) {
@@ -565,8 +1003,9 @@ function screenMap() {
     ${resourceBar()}
     <div style="flex:1; display:flex; flex-direction:column; justify-content:center; padding:2rem 1rem;">
       <div class="map-wrap">
-        <p style="text-align:center; letter-spacing:.1em; font-size:.7rem; color:var(--text-muted); margin-bottom:.4rem;">O CAMINHO ATÉ AQUI</p>
-        <h2 class="display" style="text-align:center; font-size:1.6rem; margin:0 0 1.6rem;">${state.finalChoiceUnlocked ? 'Para onde seguir?' : 'Escolha o próximo passo'}</h2>
+        <p style="text-align:center; letter-spacing:.1em; font-size:.7rem; color:var(--text-muted); margin-bottom:.4rem;">MAPA DA JORNADA</p>
+        <h2 class="display" style="text-align:center; font-size:1.6rem; margin:0 0 .45rem;">${state.finalChoiceUnlocked ? 'Para onde seguir?' : 'Escolha o próximo passo'}</h2>
+        <p style="text-align:center; max-width:620px; margin:0 auto 1.4rem; color:var(--text-muted); font-size:.86rem; line-height:1.5;">Explore os ambientes da jornada de Fabiano e sua família.</p>
         <div class="scroll-x">${mapSvg()}</div>
       </div>
     </div>
@@ -578,9 +1017,11 @@ function screenLocationDetail() {
   const loc = LOCATIONS[state.current];
   return `
   <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:2rem 1.25rem;">
+    ${bgFor(state.current)}
     <div style="max-width:480px;">
-      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.6rem;">LOCAL</p>
-      <h2 class="display" style="font-size:2.2rem; margin:0 0 1rem; text-transform:uppercase; letter-spacing:.02em;">${loc.label}</h2>
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.6rem;">${chapterLabelFor(state.current)}</p>
+      <h2 class="display" style="font-size:2.2rem; margin:0 0 .45rem; text-transform:uppercase; letter-spacing:.02em;">${loc.label}</h2>
+      <p style="margin:0 0 1rem; color:var(--accent-dark); font-family:'Fraunces',serif; font-style:italic;">${chapterTitleFor(state.current)}</p>
       <p class="prose-cap" style="margin:0 auto 2rem; color:var(--text-muted); line-height:1.6; font-size:1.02rem;">${loc.teaser}</p>
       <div style="display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap;">
         <button class="btn-ghost btn" onclick="Actions.backToMap()">Voltar ao mapa</button>
@@ -594,19 +1035,20 @@ function screenLocationDetail() {
 function screenScene() {
   const loc = LOCATIONS[state.current];
   const beat = loc.beats[state.beatIndex];
+  const beatText = typeof beat.text === 'function' ? beat.text(state) : beat.text;
 
   let inner = '';
   if (beat.type === 'narration') {
     inner = `
-      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${loc.label.toUpperCase()}</p>
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${chapterLabelFor(state.current)} · ${loc.label.toUpperCase()}</p>
       <h2 class="display" style="font-size:1.7rem; margin:0 0 1.1rem;">${beat.title}</h2>
-      <p class="prose-cap" style="color:var(--text); line-height:1.75; font-size:1.05rem;">${beat.text}</p>
+      <p class="prose-cap" style="color:var(--text); line-height:1.75; font-size:1.05rem;">${beatText}</p>
       <button class="btn" onclick="Actions.advanceBeat()" style="margin-top:2.2rem;">Continuar</button>`;
   } else {
     inner = `
-      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${loc.label.toUpperCase()}</p>
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${chapterLabelFor(state.current)} · ${loc.label.toUpperCase()}</p>
       <h2 class="display" style="font-size:1.7rem; margin:0 0 .9rem;">${beat.title}</h2>
-      <p class="prose-cap" style="color:var(--text); line-height:1.7; font-size:1.02rem; margin-bottom:1.8rem;">${beat.text}</p>
+      <p class="prose-cap" style="color:var(--text); line-height:1.7; font-size:1.02rem; margin-bottom:1.8rem;">${beatText}</p>
       <div style="display:flex; flex-direction:column; gap:.7rem; max-width:480px; margin:0 auto;">
         ${beat.options.map((opt, i) => `<button class="choice-btn" onclick="Actions.makeChoice(${i})">${opt.label}</button>`).join('')}
       </div>`;
@@ -614,6 +1056,7 @@ function screenScene() {
 
   return `
   <div class="scene">
+    ${bgFor(state.current)}
     ${resourceBar()}
     <div style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center; padding:2.5rem 1.25rem;">
       <div style="max-width:560px; width:100%;">${inner}</div>
@@ -626,6 +1069,7 @@ function screenChoiceResult() {
   const r = state._lastResult;
   return `
   <div class="scene">
+    ${bgFor(state.current)}
     ${resourceBar()}
     <div style="flex:1; display:flex; align-items:center; justify-content:center; text-align:center; padding:2.5rem 1.25rem;">
       <div style="max-width:520px;">
@@ -641,8 +1085,9 @@ function screenArrival() {
   const loc = LOCATIONS[state.current];
   return `
   <div class="scene" style="justify-content:center; align-items:center; text-align:center; padding:2rem 1.25rem;">
+    ${bgFor(state.current)}
     <div style="max-width:520px;">
-      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${loc.label.toUpperCase()}</p>
+      <p style="letter-spacing:.12em; font-size:.72rem; color:var(--text-muted); margin-bottom:.7rem;">${chapterLabelFor(state.current)} · ${loc.label.toUpperCase()}</p>
       <p class="prose-cap display" style="margin:0 auto; font-size:1.3rem; line-height:1.7; font-style:italic;">${loc.arrival}</p>
       <button class="btn" onclick="Actions.finish()" style="margin-top:2.4rem;">Continuar</button>
     </div>
@@ -664,7 +1109,7 @@ function computeFinalEnding() {
   if (state.endingType === 'tragic') return ENDINGS.tragic[state.endingCause];
   const { water, food, family } = state.resources;
   const avg = (water + food + family) / 3;
-  return avg >= 58 ? ENDINGS.good : ENDINGS.hard;
+  return avg >= 52 ? ENDINGS.good : ENDINGS.hard;
 }
 
 function screenEnding() {
@@ -718,6 +1163,7 @@ function screenEnding() {
 const screens = {
   entry: screenEntry,
   about: screenAbout,
+  chapter: () => screenChapter(state.chapterOpen),
   intro1: screenIntro1,
   intro2: screenIntro2,
   map: screenMap,
@@ -732,9 +1178,17 @@ const screens = {
    AÇÕES
    ============================================================ */
 const Actions = {
+  openChapter(n) {
+    if (n < 1 || n > BOOK_CHAPTERS.length) return;
+    state.chapterOpen = n;
+    state._returnTo = 'about';
+    state.screen = 'chapter';
+    render();
+  },
+  backToAbout() { state.chapterOpen = null; state.screen = 'about'; render(); },
   begin() { state.screen = 'intro1'; render(); },
   showAbout() { state._returnTo = state.screen; state.screen = 'about'; render(); },
-  backFromAbout() { state.screen = state._returnTo || 'entry'; render(); },
+  backFromAbout() { state.chapterOpen = null; state.screen = state._returnTo || 'entry'; render(); },
   toIntro2() { state.screen = 'intro2'; render(); },
   toMap() { state.screen = 'map'; render(); },
   backToMap() { state.screen = 'map'; render(); },
@@ -828,7 +1282,7 @@ function completeLocation() {
   state.day += 1;
 
   // a travessia cobra seu preço mesmo entre um evento e outro
-  applyDelta({ water: -7, food: -6 });
+  applyDelta({ water: -3, food: -2 });
   if (checkTragedy()) { render(); return; }
 
   const idx = state.order.indexOf(id);
